@@ -1,4 +1,0 @@
-com\egyetem\szakdolgozat\SzakdolgozatApplication.class
-com\egyetem\szakdolgozat\user\controller\UserController.class
-com\egyetem\szakdolgozat\user\persistance\repository\UserRepository.class
-com\egyetem\szakdolgozat\user\persistance\entity\User.class
