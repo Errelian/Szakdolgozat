@@ -49,7 +49,7 @@ public class User {
     private Set<RegionalAccount> regionalAccounts;
 
     @ManyToMany(mappedBy = "teamMembers")
-    private Set<Team> userTeam;
+    private Set<Team> userTeams;
 
     @Override
     public boolean equals(Object o) {
