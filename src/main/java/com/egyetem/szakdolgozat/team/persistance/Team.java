@@ -1,17 +1,14 @@
 package com.egyetem.szakdolgozat.team.persistance;
 
-import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
-import com.egyetem.szakdolgozat.teamMember.persistance.TeamMember;
+import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
 import com.egyetem.szakdolgozat.user.persistance.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,6 +42,9 @@ public class Team {
         inverseJoinColumns = @JoinColumn(name="id_user")
     )
     private Set<User> teamMembers;
+
+    @OneToMany(mappedBy = "team")
+    private Set<TournamentToTeams> tournaments;
 
     @Override
     public boolean equals(Object o) {

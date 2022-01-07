@@ -51,6 +51,12 @@ public class User {
     @ManyToMany(mappedBy = "teamMembers")
     private Set<Team> userTeams;
 
+    public User(String username, String password, String eMail) {
+        this.username = username;
+        this.password = password;
+        this.eMail = eMail;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
