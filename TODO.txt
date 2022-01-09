@@ -1,0 +1,41 @@
+Implement endpoints for:
+	User:
+		Register new user.		POST <
+		Change username.		PUT <
+		Change pw.			PUT x
+		Read user info MINUS PW.	GET <
+		Read all accounts of a user. 	GET <
+		Read all teams of a user.	GET <
+	UserAccounts:
+		Add another entity.		POST
+		Change entity name.		PUT
+		Read all user accounts.		GET
+	Team:
+		Create new team.		POST
+		Change team name.		PUT
+		Add user to team.		PUT
+		Remove user from team.		DELETE
+		Read all teams.			GET
+		Read specific team.		GET
+	Tournament:
+		Create new tournament.		POST
+		Delete tournament.		DELETE
+		Change tournament name.		PUT
+		Set Victor.			PUT
+		Change tournament region.	PUT
+		Read all tournaments.		GET
+		Read specific tournament.	GET
+	TournamentTeams:
+		Add a new team.			POST
+		Read all teams of a tournament. GET
+		Remove a team.			DELETE
+
+WRITE SEEDING ALGO:
+	#TODO
+CREATE FRONTEND:
+	WATCH REACT TUTORIALS
+	#TODO
+ADD SPRING BOOT SECURITY TO THE PROJECT:
+	#TODO
+MOVE PASSWORD TO A NEW TABLE:
+	#TODO

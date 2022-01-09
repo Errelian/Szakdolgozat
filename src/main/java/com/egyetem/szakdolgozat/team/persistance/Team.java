@@ -1,7 +1,7 @@
 package com.egyetem.szakdolgozat.team.persistance;
 
 import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
-import com.egyetem.szakdolgozat.user.persistance.User;
+import com.egyetem.szakdolgozat.user.persistance.SiteUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,10 +41,10 @@ public class Team {
         joinColumns = @JoinColumn(name="id_team"),
         inverseJoinColumns = @JoinColumn(name="id_user")
     )
-    private Set<User> teamMembers;
+    private Set<SiteUser> teamMembers;
 
-    @OneToMany(mappedBy = "team")
-    private Set<TournamentToTeams> tournaments;
+    //@OneToMany(mappedBy = "team")
+    //private Set<TournamentToTeams> tournaments;
 
     @Override
     public boolean equals(Object o) {

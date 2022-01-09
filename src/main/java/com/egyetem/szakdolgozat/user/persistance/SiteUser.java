@@ -2,8 +2,8 @@ package com.egyetem.szakdolgozat.user.persistance;
 
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.team.persistance.Team;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,19 +16,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Objects;
 import java.util.Set;
 
-@AllArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "site_user", schema = "public")
-@NoArgsConstructor
-public class User {
+public class SiteUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +33,11 @@ public class User {
     @Column(name = "username",nullable = false)
     private String username;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password",nullable = false)
     private String password;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "e_mail", nullable = false)
     private String eMail;
 
@@ -48,13 +45,23 @@ public class User {
     @JoinColumn(name = "id_user", referencedColumnName = "id_user")
     private Set<RegionalAccount> regionalAccounts;
 
-    @ManyToMany(mappedBy = "teamMembers")
-    private Set<Team> userTeams;
+    //@ManyToMany(mappedBy = "teamMembers", fetch = FetchType.LAZY)
+    //private Set<Team> userTeams;
 
-    public User(String username, String password, String eMail) {
+    public SiteUser(String username, String password, String eMail) {
         this.username = username;
         this.password = password;
         this.eMail = eMail;
+    }
+
+    public SiteUser(Long id, String username, String password, String eMail) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.eMail = eMail;
+    }
+
+    public SiteUser() {
     }
 
     @Override
@@ -65,9 +72,9 @@ public class User {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        User user = (User) o;
-        return id.equals(user.id) && username.equals(user.username) && password.equals(user.password) &&
-            eMail.equals(user.eMail);
+        SiteUser siteUser = (SiteUser) o;
+        return id.equals(siteUser.id) && username.equals(siteUser.username) && password.equals(siteUser.password) &&
+            eMail.equals(siteUser.eMail);
     }
 
     @Override
@@ -84,5 +91,41 @@ public class User {
             ", eMail='" + eMail + '\'' +
             ", regionalAccounts=" + regionalAccounts +
             '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String geteMail() {
+        return eMail;
+    }
+
+    public void seteMail(String eMail) {
+        this.eMail = eMail;
+    }
+
+    public Set<RegionalAccount> getRegionalAccounts() {
+        return regionalAccounts;
     }
 }
