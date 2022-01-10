@@ -2,10 +2,11 @@ Implement endpoints for:
 	User:
 		Register new user.		POST <
 		Change username.		PUT <
-		Change pw.			PUT x
+		Change pw.			PUT <
 		Read user info MINUS PW.	GET <
 		Read all accounts of a user. 	GET <
-		Read all teams of a user.	GET <
+		Read all teams of a user.	GET <	TODO DELETE POJOS AND REMAKE INTO MAPS
+		Delete account.			DELETE <
 	UserAccounts:
 		Add another entity.		POST
 		Change entity name.		PUT
@@ -36,6 +37,4 @@ CREATE FRONTEND:
 	WATCH REACT TUTORIALS
 	#TODO
 ADD SPRING BOOT SECURITY TO THE PROJECT:
-	#TODO
-MOVE PASSWORD TO A NEW TABLE:
 	#TODO
