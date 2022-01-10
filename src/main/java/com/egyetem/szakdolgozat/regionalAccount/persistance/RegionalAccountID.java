@@ -14,7 +14,7 @@ public class RegionalAccountID implements Serializable {
 
     @Id
     @Column(name = "id_user")
-    private Integer userId;
+    private Long userId;
 
     @Id
     @Column(name = "id_region",nullable = false)

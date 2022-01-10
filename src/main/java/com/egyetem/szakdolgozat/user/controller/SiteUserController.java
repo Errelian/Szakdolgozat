@@ -35,7 +35,7 @@ public class SiteUserController {
         this.teamRepository = teamRepository;
     }
 
-    @GetMapping(value = "/users/{userId}") //TODO REMOVE PASSWORD FROM THIS IN A PRETTY WAY
+    @GetMapping(value = "/users/{userId}")
     public SiteUser getSiteUserInfo(@PathVariable Long userId) {
         return siteUserRepository.findUserById(userId);
     }
