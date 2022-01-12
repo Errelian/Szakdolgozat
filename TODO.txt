@@ -10,16 +10,16 @@ Implement endpoints for:
 		Read all teams of a user.	GET <	TODO DELETE POJOS AND REMAKE INTO MAPS
 		Delete account.			DELETE <
 	RegionalAccount:
-		Add another entity.		POST
-		Change entity name.		PUT
-		Read all user accounts.		GET
+		Add/Change entity		POST <
+		Read all user accounts.		GET  <
+		Delete entity.			DELETE <
 	Team:
-		Create new team.		POST
-		Change team name.		PUT
-		Add user to team.		PUT
-		Remove user from team.		DELETE
-		Read all teams.			GET
-		Read specific team.		GET
+		Create new team.		POST <
+		Change team name.		PUT <
+		Add user to team.		PUT <
+		Remove user from team.		DELETE <
+		Read all teams.			GET <
+		Read specific team.		GET <
 	Tournament:
 		Create new tournament.		POST
 		Delete tournament.		DELETE
@@ -34,6 +34,13 @@ Implement endpoints for:
 		Remove a team.			DELETE
 
 WRITE SEEDING ALGO:
+	#TODO
+
+ADD UNIQUE CONSTRAINTS TO DB:
+	#TODO
+REMAKE BACKEND WITH OPTIONALS:
+	#TODO
+ADD DB-EXCEPTION HANDLING TO BACKEND:
 	#TODO
 CREATE FRONTEND:
 	WATCH REACT TUTORIALS

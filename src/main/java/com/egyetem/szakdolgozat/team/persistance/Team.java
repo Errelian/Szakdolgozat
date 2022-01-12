@@ -20,12 +20,8 @@ import javax.persistence.Table;
 import java.util.Objects;
 import java.util.Set;
 
-@AllArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "team", schema = "public")
-@NoArgsConstructor
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +38,18 @@ public class Team {
         inverseJoinColumns = @JoinColumn(name="id_user")
     )
     private Set<SiteUser> teamMembers;
+
+    public Team() {
+    }
+
+    public Team(Long id, String teamName) {
+        this.id = id;
+        this.teamName = teamName;
+    }
+
+    public Team(String teamName) {
+        this.teamName = teamName;
+    }
 
     //@OneToMany(mappedBy = "team")
     //private Set<TournamentToTeams> tournaments;
@@ -70,5 +78,29 @@ public class Team {
             ", teamName='" + teamName + '\'' +
             ", teamMembers=" + teamMembers +
             '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public Set<SiteUser> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public void setTeamMembers(Set<SiteUser> teamMembers) {
+        this.teamMembers = teamMembers;
     }
 }
