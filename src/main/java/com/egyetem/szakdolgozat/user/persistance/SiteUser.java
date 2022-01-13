@@ -1,12 +1,7 @@
 package com.egyetem.szakdolgozat.user.persistance;
 
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
-import com.egyetem.szakdolgozat.team.persistance.Team;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Objects;

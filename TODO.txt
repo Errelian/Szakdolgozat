@@ -21,13 +21,14 @@ Implement endpoints for:
 		Read all teams.			GET <
 		Read specific team.		GET <
 	Tournament:
-		Create new tournament.		POST
-		Delete tournament.		DELETE
-		Change tournament name.		PUT
-		Set Victor.			PUT
-		Change tournament region.	PUT
-		Read all tournaments.		GET
-		Read specific tournament.	GET
+		Create new tournament.		POST <
+		Delete tournament.		DELETE <
+		Change tournament name.		PUT <
+		Set Victor.			PUT <
+		Change tournament region.	PUT <
+		Read all tournaments.		GET <
+		Get all teams of a tournament	GET <
+		Read specific tournament.	GET <
 	TournamentTeams:
 		Add a new team.			POST
 		Read all teams of a tournament. GET

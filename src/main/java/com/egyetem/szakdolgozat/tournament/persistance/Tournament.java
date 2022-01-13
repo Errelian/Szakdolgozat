@@ -1,12 +1,15 @@
 package com.egyetem.szakdolgozat.tournament.persistance;
 
 import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ public class Tournament {
     private String tournamentName;
 
     @Column(name = "start_date_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
 
     @Column(name = "id_victor")
@@ -38,6 +42,7 @@ public class Tournament {
     private Long creatorId;
 
     @OneToMany(mappedBy = "tournament")
+    @JsonIgnore
     private Set<TournamentToTeams> teams;
 
     public Tournament() {

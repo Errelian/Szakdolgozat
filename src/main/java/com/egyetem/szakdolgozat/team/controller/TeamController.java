@@ -7,7 +7,6 @@ import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 public class TeamController {
@@ -72,7 +70,7 @@ public class TeamController {
     }
 
     @DeleteMapping(value = "teams/remove", consumes = "application/json")
-    public String removeUser(@RequestBody Map<String, String> json) {
+    public String removeUser(@RequestBody Map<String, String> json) { //TODO PROPER EXCEPTION HANDLING
         SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId")));
         Optional<Team> team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")));
 
