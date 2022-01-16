@@ -29,19 +29,29 @@ Implement endpoints for:
 		Read all tournaments.		GET <
 		Get all teams of a tournament	GET <
 		Read specific tournament.	GET <
-	TournamentTeams:
-		Add a new team.			POST
-		Read all teams of a tournament. GET
-		Remove a team.			DELETE
+	TournamentTeams: //this one has been reworked into TournamentController
+		Add a new team.			POST <
+		Remove a team.			DELETE <
 
-WRITE SEEDING ALGO:
-	#TODO
-
+ADD NEEDED FIELDS TO DB:
+	ADD rank FIELD TO REGION ACCOUNT <
 ADD UNIQUE CONSTRAINTS TO DB:
+	site_user username must be unique <
+	site_user email must be unique <
+	team team_name must be unque <
+	tournament name_tournament must be unique <
+REMAKE REGIONAL ACCOUNT TO REFLECT DB:
+	ADD RANK SHORT FIELD <
+ADD DB-EXCEPTION HANDLING TO BACKEND:
+	SITEUSERCONTROLLER 
+ADD HTTP RESPONSE CODES HANDLING TO BACKEND:
+	EVERY TIME U RETURN STRING -> RESPONSEENTITY
+	EXAMPLE: TOURNAMENT/ADDTEAM
 	#TODO
 REMAKE BACKEND WITH OPTIONALS:
 	#TODO
-ADD DB-EXCEPTION HANDLING TO BACKEND:
+
+WRITE SEEDING ALGO:
 	#TODO
 CREATE FRONTEND:
 	WATCH REACT TUTORIALS

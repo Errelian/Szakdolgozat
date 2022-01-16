@@ -37,6 +37,22 @@ public class TournamentToTeams {
     @Column(name = "elimination_round")
     Integer eliminationRound;
 
+    public TournamentToTeams(TournamentToTeamsCKey id) {
+        this.id = id;
+    }
+
+    public TournamentToTeams() {
+    }
+
+    public TournamentToTeams(TournamentToTeamsCKey id, Team team,
+                             Tournament tournament, Integer position, Integer eliminationRound) {
+        this.id = id;
+        this.team = team;
+        this.tournament = tournament;
+        this.position = position;
+        this.eliminationRound = eliminationRound;
+    }
+
     @Override
     public String toString() {
         return "TournamentToTeams{" +

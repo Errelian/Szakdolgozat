@@ -1,6 +1,8 @@
 package com.egyetem.szakdolgozat.user.persistance;
 
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
+import com.egyetem.szakdolgozat.team.persistance.Team;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -39,8 +42,9 @@ public class SiteUser {
     @JoinColumn(name = "id_user", referencedColumnName = "id_user")
     private Set<RegionalAccount> regionalAccounts;
 
-    //@ManyToMany(mappedBy = "teamMembers", fetch = FetchType.LAZY)
-    //private Set<Team> userTeams;
+    @ManyToMany(mappedBy = "teamMembers", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Team> userTeams;
 
     public SiteUser(String username, String password, String eMail) {
         this.username = username;
@@ -121,5 +125,18 @@ public class SiteUser {
 
     public Set<RegionalAccount> getRegionalAccounts() {
         return regionalAccounts;
+    }
+
+    public void setRegionalAccounts(
+        Set<RegionalAccount> regionalAccounts) {
+        this.regionalAccounts = regionalAccounts;
+    }
+
+    public Set<Team> getUserTeams() {
+        return userTeams;
+    }
+
+    public void setUserTeams(Set<Team> userTeams) {
+        this.userTeams = userTeams;
     }
 }

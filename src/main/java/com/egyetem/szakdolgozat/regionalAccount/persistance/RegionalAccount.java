@@ -24,6 +24,9 @@ public class RegionalAccount {
     @Column(name = "in_game_name", nullable = false)
     private String inGameName;
 
+    @Column(name = "rank")
+    private Short rank;
+
     public RegionalAccount(Long userId, String regionId, String inGameName) {
         this.userId = userId;
         this.regionId = regionId;
@@ -31,6 +34,13 @@ public class RegionalAccount {
     }
 
     public RegionalAccount() {
+    }
+
+    public RegionalAccount(Long userId, String regionId, String inGameName, Short rank) {
+        this.userId = userId;
+        this.regionId = regionId;
+        this.inGameName = inGameName;
+        this.rank = rank;
     }
 
 
@@ -73,5 +83,13 @@ public class RegionalAccount {
     @Override
     public int hashCode() {
         return Objects.hash(userId, regionId, inGameName);
+    }
+
+    public Short getRank() {
+        return rank;
+    }
+
+    public void setRank(Short rank) {
+        this.rank = rank;
     }
 }
