@@ -1,8 +1,6 @@
 package com.egyetem.szakdolgozat.user.controller;
 
-import com.egyetem.szakdolgozat.team.persistance.TeamRepository;
 import com.egyetem.szakdolgozat.user.persistance.SiteUser;
-import com.egyetem.szakdolgozat.user.persistance.SiteUserPasswordChangerPojo;
 import com.egyetem.szakdolgozat.user.persistance.SiteUserRegisterer;
 import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +22,10 @@ import java.util.Map;
 public class SiteUserController {
 
     SiteUserRepository siteUserRepository;
-    TeamRepository teamRepository;
 
     @Autowired
-    public SiteUserController(SiteUserRepository siteUserRepository, TeamRepository teamRepository) {
+    public SiteUserController(SiteUserRepository siteUserRepository) {
         this.siteUserRepository = siteUserRepository;
-        this.teamRepository = teamRepository;
     }
 
     @GetMapping(value = "/api/users/{userId}")
@@ -39,7 +35,7 @@ public class SiteUserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             return new ResponseEntity<>(siteUser, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Error" + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error: " + e.getMessage()+"\"", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -50,7 +46,7 @@ public class SiteUserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             return new ResponseEntity<>(siteUser.getRegionalAccounts(), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Error" + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -61,7 +57,7 @@ public class SiteUserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             return new ResponseEntity<>(siteUser.getUserTeams(), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Error" + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error" + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -69,7 +65,7 @@ public class SiteUserController {
     public ResponseEntity<Object> changeUsername(@RequestBody Map<String, String> json) {
         try {
             if (json.get("newName").isBlank() || json.get("userId").isBlank()) {
-                return new ResponseEntity<>("No field can be left blank.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("\"No field can be left blank.\"", HttpStatus.BAD_REQUEST);
             }
             SiteUser tempUser = siteUserRepository.findUserById(Long.parseLong(json.get("userId")))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -78,11 +74,11 @@ public class SiteUserController {
 
             siteUserRepository.save(tempUser);
 
-            return new ResponseEntity<>("Username succesfully changed.", HttpStatus.OK);
+            return new ResponseEntity<>("\"Username succesfully changed.\"", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Error" + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>("Error, name already in use.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Error, name already in use.\"", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -97,11 +93,11 @@ public class SiteUserController {
                     registerUser.geteMail()); //TODO add pw hashing to this
 
                 siteUserRepository.save(user);
-                return new ResponseEntity<>("Sucessfull registration.", HttpStatus.OK);
+                return new ResponseEntity<>("\"Sucessfull registration.\"", HttpStatus.OK);
             }
-            return new ResponseEntity<>("Error, username, password, or email cannot be empty.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Error, username, password, or email cannot be empty.\"", HttpStatus.BAD_REQUEST);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>("Error, email or username already in use", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Error, email or username already in use\"", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -116,11 +112,11 @@ public class SiteUserController {
             {
                 currentUser.setPassword(json.get("newPassword"));
                 siteUserRepository.save(currentUser);
-                return new ResponseEntity<>("Successfully changed password.", HttpStatus.OK);
+                return new ResponseEntity<>("\"Successfully changed password.\"", HttpStatus.OK);
             }
-            return new ResponseEntity<>("Error, mismatching passwords.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Error, mismatching passwords.\"", HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
 
     }
@@ -135,11 +131,11 @@ public class SiteUserController {
 
             if (currentUser.getPassword().equals(json.get("password"))) { //TODO ADD HASHING TO THIS
                 siteUserRepository.delete(currentUser);
-                return new ResponseEntity<>("User deleted.", HttpStatus.OK);
+                return new ResponseEntity<>("\"User deleted.\"", HttpStatus.OK);
             }
-            return new ResponseEntity<>("Password is wrong.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Password is wrong.\"", HttpStatus.BAD_REQUEST);
         }catch(ResourceNotFoundException e){
-            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
 }

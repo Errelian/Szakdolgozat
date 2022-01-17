@@ -7,6 +7,7 @@ import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,7 @@ public class TeamController {
         this.siteUserRepository = siteUserRepository;
     }
 
-    @PostMapping(value = "teams/create", consumes = "application/json")
+    @PostMapping(value = "/api/teams/create", consumes = "application/json")
     public ResponseEntity<String> createNewTeam(@RequestBody Map<String, String> json) {
 
         try {
@@ -40,70 +42,96 @@ public class TeamController {
                 Team team = new Team(json.get("teamName"));
 
                 teamRepository.save(team);
-                return new ResponseEntity<>("Successfully created new team.", HttpStatus.OK);
+                return new ResponseEntity<>("\"Successfully created new team.\"", HttpStatus.OK);
             }
-            return new ResponseEntity<>("Error, team name cannot be blank.", HttpStatus.BAD_REQUEST);
-        }
-        catch(DataIntegrityViolationException e){
-            return new ResponseEntity<>("Name already in use.", HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>("\"Error, team name cannot be blank.\"", HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>("\"Name already in use.\"", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    @PutMapping(value = "teams/changeName", consumes = "application/json")
-    public String changeName(@RequestBody Map<String, String> json) {
-        if (!(json.get("teamNameNew").isBlank() || json.get("changerId").isBlank())) {
-            Optional<Team> team = teamRepository.findByTeamName(json.get("teamNameOld"));
-            SiteUser changer = siteUserRepository.findUserById(Long.parseLong(json.get("changerId"))).get(); //TODO
+    @PutMapping(value = "/api/teams/changeName", consumes = "application/json")
+    public ResponseEntity<String> changeName(@RequestBody Map<String, String> json) {
+        try {
+            if (!(json.get("teamNameNew").isBlank() || json.get("changerId").isBlank())) {
 
-            if (team.isPresent() && team.get().getTeamMembers().contains(changer)) {
-                team.get().setTeamName(json.get("teamNameNew"));
-                teamRepository.save(team.get());
-                return "Successfully changed team name.";
+                Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+                SiteUser changer = siteUserRepository.findUserById(Long.parseLong(json.get("changerId")))
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                if (team.getTeamMembers().contains(changer)) {
+                    team.setTeamName(json.get("teamNameNew"));
+                    teamRepository.save(team);
+                    return new ResponseEntity<>("\"Successfully changed team name.\"", HttpStatus.OK);
+                }
+                return new ResponseEntity<>("\"You are not part of that team\"", HttpStatus.FORBIDDEN);
             }
-            return "You are not part of that team";
+            return new ResponseEntity<>("\"Error, the teamname or your id cannot be blank\"", HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
-        return "Error, the teamname or your id cannot be blank";
     }
 
-    @PutMapping(value = "teams/add", consumes = "application/json")
-    public String addUser(@RequestBody Map<String, String> json) {
-        SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId"))).get(); //TODO
-        Optional<Team> team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")));
+    @PutMapping(value = "/api/teams/add", consumes = "application/json")
+    public ResponseEntity<String> addUser(@RequestBody Map<String, String> json) {
+        try {
+            SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId")))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found.")); //TODO
+            Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")))
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
 
-        if (team.isPresent() && user != null) {
-            team.get().getTeamMembers().add(user);
+            team.getTeamMembers().add(user);
 
-            teamRepository.save(team.get());
-            return "Successfully added user.";
+            teamRepository.save(team);
+            return new ResponseEntity<>("\"Successfully added user.\"", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
-        return "Some kind of error has occurred.";
     }
 
-    @DeleteMapping(value = "teams/remove", consumes = "application/json")
-    public String removeUser(@RequestBody Map<String, String> json) { //TODO PROPER EXCEPTION HANDLING
-        SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId"))).get();
-        Optional<Team> team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")));
+    @DeleteMapping(value = "/api/teams/remove", consumes = "application/json")
+    public ResponseEntity<String> removeUser(@RequestBody Map<String, String> json) {
+        try {
+            Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+            SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("changerId")))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-        if (team.isPresent() && user != null) {
-            if (team.get().getTeamMembers().contains(user)) {
-                team.get().getTeamMembers().remove(user);
+
+            if (team.getTeamMembers().contains(user)) {
+                team.getTeamMembers().remove(user);
             } else {
-                return "You are not in this team";
+                return new ResponseEntity<>("\"You are not in this team\"", HttpStatus.FORBIDDEN);
             }
-            teamRepository.save(team.get());
-            return "Successfully removed user.";
+            teamRepository.save(team);
+            return new ResponseEntity<>("\"Successfully removed user.\"", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
-        return "Some kind of error has occurred.";
     }
 
-    @GetMapping(value = "teams/all")
-    public List<Team> getAllTeams(){
-        return teamRepository.findAll();
+    @GetMapping(value = "/api/teams/all")
+    public ResponseEntity<Object> getAllTeams() {
+        try {
+            List<Team> teams = teamRepository.findAll();
+
+            return new ResponseEntity<>(teams, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
     }
 
-    @GetMapping(value = "teams/{teamId}")
-    public Optional<Team> getTeam(@PathVariable Long teamId){
-        return teamRepository.findTeamById(teamId);
+    @GetMapping(value = "/api/teams/{teamId}")
+    public ResponseEntity<Object> getTeam(@PathVariable Long teamId) {
+        try {
+            Team team =
+                teamRepository.findTeamById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+
+            return new ResponseEntity<>(team, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
     }
 
 }

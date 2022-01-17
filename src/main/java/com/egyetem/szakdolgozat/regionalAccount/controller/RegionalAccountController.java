@@ -1,21 +1,20 @@
 package com.egyetem.szakdolgozat.regionalAccount.controller;
 
-import com.egyetem.szakdolgozat.region.persistance.Region;
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccountRepository;
-import com.egyetem.szakdolgozat.team.persistance.TeamRepository;
-import com.egyetem.szakdolgozat.user.persistance.SiteUser;
-import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
+
 
 @RestController
 public class RegionalAccountController {
@@ -27,23 +26,35 @@ public class RegionalAccountController {
         this.regionalAccountRepository = regionalAccountRepository;
     }
 
-    @GetMapping(value = "/regionalAccounts/{userId}/")
-    public Set<RegionalAccount> getAll(@PathVariable Long userId) {
-        return regionalAccountRepository.findByUserId(userId);
+    @GetMapping(value = "/api/regionalAccounts/{userId}/")
+    public ResponseEntity<Object> getAll(@PathVariable Long userId) {
+        try {
+            Set<RegionalAccount> regionalAccounts = regionalAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("\"User not found.\""));
+
+            return new ResponseEntity<>(regionalAccounts, HttpStatus.OK);
+        }catch (ResourceNotFoundException e){
+            return new ResponseEntity<>("\"Error: " +e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
     }
 
-    @PostMapping(value = "/regionalAccounts/update", consumes = "application/json")
-    public String updateRegionalAccountInfo(@RequestBody RegionalAccount regionalAccount){
-        if (!(regionalAccount.getRegionId().isBlank() || regionalAccount.getInGameName().isBlank())){
+    @PostMapping(value = "/api/regionalAccounts/update", consumes = "application/json")
+    public ResponseEntity<String> updateRegionalAccountInfo(@RequestBody RegionalAccount regionalAccount) {
+        if (!(regionalAccount.getRegionId().isBlank() || regionalAccount.getInGameName().isBlank())) {
             regionalAccountRepository.save(regionalAccount);
-            return "Change saved.";
+            return new ResponseEntity<>("\"Change saved.\"", HttpStatus.OK);
         }
-        return "Error, change no saved. No field can be blank.";
+        return new ResponseEntity<>("\"Error, change no saved. No field can be blank.\"", HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/regionalAccounts/delete", consumes = "application/json")
-    public String deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount){
-        regionalAccountRepository.delete(regionalAccount);
-        return "If the entity existed, it was deleted.";
+    public ResponseEntity<String> deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount) {
+        try {
+            regionalAccountRepository.delete(regionalAccount);
+            return new ResponseEntity<>("\"Entity deleted.\"", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("\"An unknown error has occoured, check request fields.\"",
+                HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
