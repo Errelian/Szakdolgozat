@@ -25,6 +25,7 @@ import java.util.Optional;
 
 @RestController
 public class TeamController {
+
     TeamRepository teamRepository;
     SiteUserRepository siteUserRepository;
 
@@ -127,6 +128,18 @@ public class TeamController {
         try {
             Team team =
                 teamRepository.findTeamById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+
+            return new ResponseEntity<>(team, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/api/teams/byname/{teamName}")
+    public ResponseEntity<Object> getTeamByName(@PathVariable String teamName){
+        try {
+            Team team =
+                teamRepository.findByTeamName(teamName).orElseThrow(() -> new ResourceNotFoundException("Team not found."));
 
             return new ResponseEntity<>(team, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {

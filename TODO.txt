@@ -44,18 +44,48 @@ ADD UNIQUE CONSTRAINTS TO DB:
 REMAKE REGIONAL ACCOUNT TO REFLECT DB:
 	ADD RANK SHORT FIELD <
 ADD DB-EXCEPTION HANDLING TO BACKEND:
-	SITEUSERCONTROLLER 
+	SITEUSERCONTROLLER <
 	REGIONALACCOUNTCONTROLLER <
 	TEAMCONTROLLER <
-ADD HTTP RESPONSE CODES HANDLING TO BACKEND:
-	EVERY TIME U RETURN STRING -> RESPONSEENTITY
-	EXAMPLE: TOURNAMENT/ADDTEAM
-	#TODO
-REMAKE BACKEND WITH OPTIONALS:
-	#TODO
+	TOURNAMEN T<
+ADD HTTP RESPONSE CODES HANDLING TO BACKEND: <
+REMAKE BACKEND WITH OPTIONALS: <
+
+
+
+FILL DATABASE WITH 2 TEAM'S WORTH OF RANK DATA: <
+	
 
 WRITE SEEDING ALGO:
-	#TODO
+	CREATE CLASS TEAMSKILLDTO FOR TRANSFERRING SKILL DATA <
+	takes as an argument: REGION (of the tournament) <
+		could be a method of Tournament??? x
+		WRITE AN ALGO CALCULATES A TEAM'S SKILL SCORE BASED ON THEIR MEMBERS AND RETURNS A MAP OBJECT OF TeamSkillDto (team with an extra field) <
+	PUT IT INTO A LIST<TeamSkillDto>
+	Write an algo that orders that list based on the skill level
+	it returns that list
+	make updating ranks thru riot api optional
+
+WRITE RIOT API STUFF:
+	update DB tournament field with "currently_updating" boolean that the rank updating method will set and unset to make sure that we keep consistency
+
+	research how to make many fast async http calls
+		likely will need spring @Async and make it update a tournament's DB part with a "currently being updated" boolean to true to avoid tournaments starting while its being updated
+	research all lol ranks: <
+		make an enum to represent them, avoid magic constants <
+	write a method that updates the relevant RegionalAccounts of the DBase for a tournament with ranks:
+		make it do a limited number of api calls/10seconds to avoid being blocked for ddos
+			research how many calls i can make before being blocked for ddos
+	write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi
+
+CONSIDER ADDING IMAGES:
+	GET 16 (maybe 24) FREE PG IMAGES THAT TEAMS CAN USE TO REPRESENT THEMSELVES
+	HOST THEM ON SOME FREE SITE
+	GIVE THE DB A NEW TABLE "image" THAT CONTAINS: image_id and image_url
+	extra fields to "team" table: image_id
+	
+	
+	
 CREATE FRONTEND:
 	WATCH REACT TUTORIALS
 	#TODO

@@ -43,7 +43,6 @@ public class RegionalAccount {
         this.rank = rank;
     }
 
-
     public Long getUserId() {
         return userId;
     }

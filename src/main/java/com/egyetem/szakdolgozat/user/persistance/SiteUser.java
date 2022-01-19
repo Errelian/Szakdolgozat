@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -89,6 +90,15 @@ public class SiteUser {
             ", eMail='" + eMail + '\'' +
             ", regionalAccounts=" + regionalAccounts +
             '}';
+    }
+
+    public Optional<RegionalAccount> getRegionalAccountByRegion(String region){
+        for (RegionalAccount regionalAccount : regionalAccounts){
+            if (regionalAccount.getRegionId().equals(region)){
+                return Optional.of(regionalAccount);
+            }
+        }
+        return Optional.empty();
     }
 
     public Long getId() {
