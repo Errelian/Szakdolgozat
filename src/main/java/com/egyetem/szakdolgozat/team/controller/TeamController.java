@@ -35,7 +35,7 @@ public class TeamController {
         this.siteUserRepository = siteUserRepository;
     }
 
-    @PostMapping(value = "/api/teams/create", consumes = "application/json")
+    @PostMapping(value = "/api/teams/create", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createNewTeam(@RequestBody Map<String, String> json) {
 
         try {
@@ -51,7 +51,7 @@ public class TeamController {
         }
     }
 
-    @PutMapping(value = "/api/teams/changeName", consumes = "application/json")
+    @PutMapping(value = "/api/teams/changeName", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeName(@RequestBody Map<String, String> json) {
         try {
             if (!(json.get("teamNameNew").isBlank() || json.get("changerId").isBlank())) {
@@ -74,7 +74,7 @@ public class TeamController {
         }
     }
 
-    @PutMapping(value = "/api/teams/add", consumes = "application/json")
+    @PutMapping(value = "/api/teams/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> addUser(@RequestBody Map<String, String> json) {
         try {
             SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId")))
@@ -91,7 +91,7 @@ public class TeamController {
         }
     }
 
-    @DeleteMapping(value = "/api/teams/remove", consumes = "application/json")
+    @DeleteMapping(value = "/api/teams/remove", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> removeUser(@RequestBody Map<String, String> json) {
         try {
             Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
@@ -112,7 +112,7 @@ public class TeamController {
         }
     }
 
-    @GetMapping(value = "/api/teams/all")
+    @GetMapping(value = "/api/teams/all", produces = "application/json")
     public ResponseEntity<Object> getAllTeams() {
         try {
             List<Team> teams = teamRepository.findAll();
@@ -123,7 +123,7 @@ public class TeamController {
         }
     }
 
-    @GetMapping(value = "/api/teams/{teamId}")
+    @GetMapping(value = "/api/teams/{teamId}", produces = "application/json")
     public ResponseEntity<Object> getTeam(@PathVariable Long teamId) {
         try {
             Team team =
@@ -135,7 +135,7 @@ public class TeamController {
         }
     }
 
-    @GetMapping(value = "/api/teams/byname/{teamName}")
+    @GetMapping(value = "/api/teams/byname/{teamName}", produces = "application/json")
     public ResponseEntity<Object> getTeamByName(@PathVariable String teamName){
         try {
             Team team =

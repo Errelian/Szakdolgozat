@@ -28,7 +28,7 @@ public class SiteUserController {
         this.siteUserRepository = siteUserRepository;
     }
 
-    @GetMapping(value = "/api/users/{userId}")
+    @GetMapping(value = "/api/users/{userId}", produces = "application/json")
     public ResponseEntity<Object> getSiteUserInfo(@PathVariable Long userId) {
         try {
             SiteUser siteUser = siteUserRepository.findUserById(userId)
@@ -39,7 +39,7 @@ public class SiteUserController {
         }
     }
 
-    @GetMapping(value = "/api/users/{userId}/accounts")
+    @GetMapping(value = "/api/users/{userId}/accounts", produces = "application/json")
     public ResponseEntity<Object> getUsersAccounts(@PathVariable Long userId) {
         try {
             SiteUser siteUser = siteUserRepository.findUserById(userId)
@@ -50,7 +50,7 @@ public class SiteUserController {
         }
     }
 
-    @GetMapping(value = "/api/users/{userId}/teams")
+    @GetMapping(value = "/api/users/{userId}/teams", produces = "application/json")
     public ResponseEntity<Object> getUserTeams(@PathVariable Long userId) {
         try {
             SiteUser siteUser = siteUserRepository.findUserById(userId)
@@ -61,7 +61,7 @@ public class SiteUserController {
         }
     }
 
-    @PutMapping(value = "/api/users/changeName", consumes = "application/json")
+    @PutMapping(value = "/api/users/changeName", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> changeUsername(@RequestBody Map<String, String> json) {
         try {
             if (json.get("newName").isBlank() || json.get("userId").isBlank()) {
@@ -82,7 +82,7 @@ public class SiteUserController {
         }
     }
 
-    @PostMapping(value = "/api/users/register", consumes = "application/json")
+    @PostMapping(value = "/api/users/register", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> registerUser(@RequestBody SiteUserRegisterer registerUser) {
 
         try {
@@ -101,7 +101,7 @@ public class SiteUserController {
         }
     }
 
-    @PutMapping(value = "/api/users/{userId}/password", consumes = "application/json")
+    @PutMapping(value = "/api/users/{userId}/password", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> changePassword(@PathVariable Long userId, @RequestBody Map<String, String> json) {
 
         try {
@@ -121,7 +121,7 @@ public class SiteUserController {
 
     }
 
-    @DeleteMapping(value = "/api/users/{userId}/delete")
+    @DeleteMapping(value = "/api/users/{userId}/delete", produces = "application/json")
     public ResponseEntity<Object> deleteAccount(@PathVariable Long userId, @RequestBody Map<String, String> json) {
 
         try {

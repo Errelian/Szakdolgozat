@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class Tournament {
 
     @OneToMany(mappedBy = "tournament")
     @JsonIgnore
-    private Set<TournamentToTeams> teams;
+    private List<TournamentToTeams> teams;
 
     public Tournament() {
     }
@@ -144,11 +145,11 @@ public class Tournament {
             '}';
     }
 
-    public Set<TournamentToTeams> getTeams() {
+    public List<TournamentToTeams> getTeams() {
         return teams;
     }
 
-    public void setTeams(Set<TournamentToTeams> teams) {
+    public void setTeams(List<TournamentToTeams> teams) {
         this.teams = teams;
     }
 }

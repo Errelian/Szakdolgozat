@@ -1,4 +1,4 @@
-package com.egyetem.szakdolgozat;
+package com.egyetem.szakdolgozat.seeding;
 
 import com.egyetem.szakdolgozat.team.persistance.Team;
 

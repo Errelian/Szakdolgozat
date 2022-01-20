@@ -26,7 +26,7 @@ public class RegionalAccountController {
         this.regionalAccountRepository = regionalAccountRepository;
     }
 
-    @GetMapping(value = "/api/regionalAccounts/{userId}/")
+    @GetMapping(value = "/api/regionalAccounts/{userId}/", produces = "application/json")
     public ResponseEntity<Object> getAll(@PathVariable Long userId) {
         try {
             Set<RegionalAccount> regionalAccounts = regionalAccountRepository.findByUserId(userId)
@@ -38,7 +38,7 @@ public class RegionalAccountController {
         }
     }
 
-    @PostMapping(value = "/api/regionalAccounts/update", consumes = "application/json")
+    @PostMapping(value = "/api/regionalAccounts/update", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> updateRegionalAccountInfo(@RequestBody RegionalAccount regionalAccount) {
         if (!(regionalAccount.getRegionId().isBlank() || regionalAccount.getInGameName().isBlank())) {
             regionalAccountRepository.save(regionalAccount);
@@ -47,7 +47,7 @@ public class RegionalAccountController {
         return new ResponseEntity<>("\"Error, change no saved. No field can be blank.\"", HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping(value = "/regionalAccounts/delete", consumes = "application/json")
+    @DeleteMapping(value = "/regionalAccounts/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount) {
         try {
             regionalAccountRepository.delete(regionalAccount);

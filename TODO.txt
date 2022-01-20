@@ -61,10 +61,14 @@ WRITE SEEDING ALGO:
 	takes as an argument: REGION (of the tournament) <
 		could be a method of Tournament??? x
 		WRITE AN ALGO CALCULATES A TEAM'S SKILL SCORE BASED ON THEIR MEMBERS AND RETURNS A MAP OBJECT OF TeamSkillDto (team with an extra field) <
-	PUT IT INTO A LIST<TeamSkillDto>
-	Write an algo that orders that list based on the skill level
-	it returns that list
+	PUT IT INTO A LIST<TeamSkillDto> <
+	Write an algo that orders that list based on the skill level <
+	it returns that list<
 	make updating ranks thru riot api optional
+	write algo that takes only tournament and seeds it <
+
+	CREATE REST CONTROLLER FOR SEEDING <
+	
 
 WRITE RIOT API STUFF:
 	update DB tournament field with "currently_updating" boolean that the rank updating method will set and unset to make sure that we keep consistency
@@ -79,6 +83,7 @@ WRITE RIOT API STUFF:
 	write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi
 
 CONSIDER ADDING IMAGES:
+	!!!!REVERSE PROXIY STUFF???!!!!!
 	GET 16 (maybe 24) FREE PG IMAGES THAT TEAMS CAN USE TO REPRESENT THEMSELVES
 	HOST THEM ON SOME FREE SITE
 	GIVE THE DB A NEW TABLE "image" THAT CONTAINS: image_id and image_url

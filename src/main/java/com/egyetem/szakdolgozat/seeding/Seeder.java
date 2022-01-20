@@ -1,19 +1,20 @@
-package com.egyetem.szakdolgozat;
+package com.egyetem.szakdolgozat.seeding;
 
 import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.team.persistance.Team;
+import com.egyetem.szakdolgozat.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
 import com.egyetem.szakdolgozat.user.persistance.SiteUser;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class Seeder {
 
-    public Seeder() {
-    }
 
     public static TeamSkillDto teamSkillCalculator(Team team, String region) {
 
@@ -42,14 +43,12 @@ public class Seeder {
         return new TeamSkillDto(team, skillSum / memberCount, false);
     }
 
-    public static List<TeamSkillDto> seedList(List<TeamSkillDto> teamSkills) { //TODO ADD STACKOVERFLOW ATTRIBUTION
+    public static ArrayList<ArrayList<TeamSkillDto>> seedList(List<TeamSkillDto> teamSkills) { //TODO ADD STACKOVERFLOW ATTRIBUTION
         if (teamSkills.size() < 2) {
-            return new ArrayList<TeamSkillDto>();
+            return new ArrayList<>();
         }
 
-        Integer rounds = (int) Math.ceil(Math.log(teamSkills.size()) / Math.log(2));
-        double bracketSize = Math.pow(2.0, (double) rounds);
-        Integer fakeTeamsRequired = (int) (bracketSize - teamSkills.size());
+        int rounds = (int) Math.ceil(Math.log(teamSkills.size()) / Math.log(2));
 
         List<ArrayList<Integer>> matches = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> initial = new ArrayList<>();
@@ -77,19 +76,43 @@ public class Seeder {
                 ArrayList<Integer> temporaryList2 = new ArrayList<>();
                 temporaryList2.add(first);
                 temporaryList2.add(second);
-
                 thisRoundMatches.add(temporaryList2);
 
             }
-
             matches = thisRoundMatches;
-
         }
 
-        System.out.println(matches); //TODO CONVERT THIS INTO A LIST<TeamSkillDto>, use sorted list of og list, null is always fake team
+        teamSkills.sort((Comparator.comparing(TeamSkillDto::getAverageRank)));
+        Collections.reverse(teamSkills);
+        ArrayList<ArrayList<TeamSkillDto>> teamSkillMatches = new ArrayList<>();
 
-        System.out.println(rounds);
-        return null;
+
+        for (ArrayList<Integer> match : matches){
+            ArrayList<TeamSkillDto> matchup = new ArrayList<>();
+            for (Integer seed : match){
+                if (seed != null){
+                    matchup.add(teamSkills.get(seed - 1));
+                }
+                else{
+                    matchup.add(new TeamSkillDto(new Team(-1L, "fake"), 0.0, true));
+                }
+            }
+            teamSkillMatches.add(matchup);
+        }
+
+        return teamSkillMatches;
+    }
+
+    public static ArrayList<ArrayList<TeamSkillDto>> seedTournament(Tournament tournament){
+        List<TournamentToTeams> teams = tournament.getTeams();
+
+        List<TeamSkillDto> teamSkills = new ArrayList<>();
+
+        for (TournamentToTeams teamTable : teams){
+            teamSkills.add(Seeder.teamSkillCalculator(teamTable.getTeam(), tournament.getRegionId()));
+        }
+
+        return Seeder.seedList(teamSkills);
     }
 
     private static Integer switchToGhostMatchup(Integer seed , Integer participiantsSize) {

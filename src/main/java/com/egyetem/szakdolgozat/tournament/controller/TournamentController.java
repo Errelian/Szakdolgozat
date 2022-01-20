@@ -42,7 +42,7 @@ public class TournamentController {
         this.teamRepository = teamRepository;
     }
 
-    @PostMapping(value = "/api/tournament/create", consumes = "application/json")
+    @PostMapping(value = "/api/tournament/create", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createNewTournament(
         @RequestBody Tournament tournament) { //TODO EXCEPTION HANDLING THIS APPLIES TO THE ENTIRE FILE
         try {
@@ -62,14 +62,14 @@ public class TournamentController {
 
 
     //TODO spring secu: check if logged in id == creatorId
-    @DeleteMapping(value = "/api/tournament/delete", consumes = "application/json")
+    @DeleteMapping(value = "/api/tournament/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteTournament(@RequestBody Map<String, Long> json) {
         tournamentRepository.deleteById(json.get("tournamentId"));
         return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
     }
 
     //TODO spring secu: check if logged in id == creatorID
-    @PutMapping(value = "/api/tournament/change/name", consumes = "application/json")
+    @PutMapping(value = "/api/tournament/change/name", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeTournamentName(@RequestBody Map<String, String> json) {
 
         try {
@@ -92,7 +92,7 @@ public class TournamentController {
     }
 
 
-    @PutMapping(value = "/api/tournament/change/victor", consumes = "application/json")
+    @PutMapping(value = "/api/tournament/change/victor", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeVictor(@RequestBody Map<String, String> json) {
 
         try {
@@ -112,7 +112,7 @@ public class TournamentController {
         }
     }
 
-    @PutMapping(value = "/api/tournament/change/region", consumes = "application/json") //TODO EXCEPTION HANDLING
+    @PutMapping(value = "/api/tournament/change/region", consumes = "application/json", produces = "application/json") //TODO EXCEPTION HANDLING
     public ResponseEntity<String> changeRegion(@RequestBody Map<String, String> json) {
 
         try {
@@ -132,12 +132,12 @@ public class TournamentController {
         }
     }
 
-    @GetMapping(value = "/api/tournament/get/all")
+    @GetMapping(value = "/api/tournament/get/all", produces = "application/json")
     public ResponseEntity<Object> getAll() {
         return new ResponseEntity<>(tournamentRepository.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/tournament/get/teams/{tournamentId}")
+    @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")
     public ResponseEntity<Object> getTeams(@PathVariable Long tournamentId) {
         try {
             Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -149,7 +149,7 @@ public class TournamentController {
         }
     }
 
-    @GetMapping(value = "/api/tournament/get/{tournamentId}")
+    @GetMapping(value = "/api/tournament/get/{tournamentId}", produces = "application/json")
     public ResponseEntity<Object> getTournament(@PathVariable Long tournamentId) {
         try {
             Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -161,7 +161,7 @@ public class TournamentController {
         }
     }
 
-    @PostMapping(value = "/api/tournament/add/team", consumes = "application/json")
+    @PostMapping(value = "/api/tournament/add/team", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> addTeam(
         @RequestBody Map<String, String> json) { //TODO ADD EXCEPTION HANDLING TO IT, CONSTRAINT MOST LIKELY
 
@@ -192,7 +192,7 @@ public class TournamentController {
 
     }
 
-    @DeleteMapping(value = "/api/tournament/remove/team", consumes = "application/json")
+    @DeleteMapping(value = "/api/tournament/remove/team", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> removeTeam(@RequestBody Map<String, String> json) {
 
         try {
@@ -222,7 +222,7 @@ public class TournamentController {
     }
 
     //Position can only be modified by the backend, so this is only for elimination
-    @PutMapping(value = "api/tournament/modify/team", consumes = "application/json")
+    @PutMapping(value = "api/tournament/modify/team", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> modifyTeam(@RequestBody Map<String, Long> json) {
 
         try {

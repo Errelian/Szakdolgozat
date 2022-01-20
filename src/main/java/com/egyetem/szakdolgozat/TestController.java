@@ -1,7 +1,10 @@
 package com.egyetem.szakdolgozat;
 
+import com.egyetem.szakdolgozat.seeding.Seeder;
+import com.egyetem.szakdolgozat.seeding.TeamSkillDto;
 import com.egyetem.szakdolgozat.team.persistance.Team;
 import com.egyetem.szakdolgozat.team.persistance.TeamRepository;
+import com.egyetem.szakdolgozat.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -16,11 +19,13 @@ public class TestController {
 
     TeamRepository teamRepository;
     SiteUserRepository siteUserRepository;
+    TournamentRepository tournamentRepository;
 
     @Autowired
-    public TestController(TeamRepository teamRepository, SiteUserRepository siteUserRepository) {
+    public TestController(TeamRepository teamRepository, SiteUserRepository siteUserRepository, TournamentRepository tournamentRepository) {
         this.teamRepository = teamRepository;
         this.siteUserRepository = siteUserRepository;
+        this.tournamentRepository = tournamentRepository;
     }
 
     @GetMapping(value = "/api/test/seeder/teamskill")
@@ -41,13 +46,15 @@ public class TestController {
 
         List<TeamSkillDto> teamSkillDtoList = new ArrayList<>();
 
-        teamSkillDtoList.add(Seeder.teamSkillCalculator(team1, "EUN"));
+        teamSkillDtoList.add(Seeder.teamSkillCalculator(team1, "EUW"));
         teamSkillDtoList.add(Seeder.teamSkillCalculator(team2, "EUW"));
         teamSkillDtoList.add(Seeder.teamSkillCalculator(team3, "EUW"));
         teamSkillDtoList.add(Seeder.teamSkillCalculator(team4, "EUW"));
 
 
-       Seeder.seedList(teamSkillDtoList);
+       System.out.println(Seeder.seedList(teamSkillDtoList));
+
+       System.out.println(Seeder.seedTournament(tournamentRepository.findById(4L).get()));
 
     }
 }
