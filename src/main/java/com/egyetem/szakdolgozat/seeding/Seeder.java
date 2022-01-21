@@ -1,10 +1,10 @@
 package com.egyetem.szakdolgozat.seeding;
 
-import com.egyetem.szakdolgozat.regionalAccount.persistance.RegionalAccount;
-import com.egyetem.szakdolgozat.team.persistance.Team;
-import com.egyetem.szakdolgozat.tournament.persistance.Tournament;
-import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
-import com.egyetem.szakdolgozat.user.persistance.SiteUser;
+import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccount;
+import com.egyetem.szakdolgozat.database.team.persistance.Team;
+import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
+import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,10 +1,10 @@
 package com.egyetem.szakdolgozat.seeding;
 
-import com.egyetem.szakdolgozat.tournament.persistance.Tournament;
-import com.egyetem.szakdolgozat.tournament.persistance.TournamentRepository;
-import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeams;
-import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeamsCKey;
-import com.egyetem.szakdolgozat.tournamentToTeams.persistance.TournamentToTeamsRepository;
+import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;

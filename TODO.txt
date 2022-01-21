@@ -71,16 +71,39 @@ WRITE SEEDING ALGO:
 	
 
 WRITE RIOT API STUFF:
-	update DB tournament field with "currently_updating" boolean that the rank updating method will set and unset to make sure that we keep consistency
-
-	research how to make many fast async http calls
-		likely will need spring @Async and make it update a tournament's DB part with a "currently being updated" boolean to true to avoid tournaments starting while its being updated
+	
 	research all lol ranks: <
 		make an enum to represent them, avoid magic constants <
-	write a method that updates the relevant RegionalAccounts of the DBase for a tournament with ranks:
-		make it do a limited number of api calls/10seconds to avoid being blocked for ddos
-			research how many calls i can make before being blocked for ddos
-	write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi
+
+	research how to make the queries <
+
+	research how to make many fast async http calls<
+		likely will need spring @Async and make it update a tournament's DB part with a "currently being updated" boolean to true to avoid tournaments starting while its being updated
+
+	update DB tournament field with "currently_updating" boolean that the rank updating method will set and unset to make sure that we keep consistency <
+
+	update spring entity to represent the db changes <
+
+	create a method to construct the api URL <
+
+	create Async method that updates all regionalAccounts relevant to a tournament:
+		it sets "currently_updating" to true at the start <
+		gets all relevant RegionalAccounts <
+		gets all encrypted ids relevant to the user names and puts them into a list: List<IdDeserializer> (???) <
+		uses all encrypted ids to fetch the highest ranks of every RegionalAccount and updates it through the Enum
+			gets a list of lists as in : List<List<RankDeserializer>>
+			for each inner list selects only the highest rank and uses that to save
+		saves them all down
+		it sets "currently_updating" to false at the end <
+
+	
+	write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi XX//likely nope, i will need a new api key every day. That or a personal key.
+
+	add something to track timeouts	
+	handle null values
+
+MAKE ALL TOURNAMENT METHODS AWARE OF "currently updating":
+	tournamentController etc.
 
 CONSIDER ADDING IMAGES:
 	!!!!REVERSE PROXIY STUFF???!!!!!
@@ -88,11 +111,10 @@ CONSIDER ADDING IMAGES:
 	HOST THEM ON SOME FREE SITE
 	GIVE THE DB A NEW TABLE "image" THAT CONTAINS: image_id and image_url
 	extra fields to "team" table: image_id
-	
-	
+
+ADD SPRING BOOT SECURITY TO THE PROJECT / ADD OATH 2:
+	#TODO
 	
 CREATE FRONTEND:
 	WATCH REACT TUTORIALS
-	#TODO
-ADD SPRING BOOT SECURITY TO THE PROJECT:
 	#TODO

@@ -1,11 +1,13 @@
 package com.egyetem.szakdolgozat;
 
+import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.ranking.RankingService;
 import com.egyetem.szakdolgozat.seeding.Seeder;
 import com.egyetem.szakdolgozat.seeding.TeamSkillDto;
-import com.egyetem.szakdolgozat.team.persistance.Team;
-import com.egyetem.szakdolgozat.team.persistance.TeamRepository;
-import com.egyetem.szakdolgozat.tournament.persistance.TournamentRepository;
-import com.egyetem.szakdolgozat.user.persistance.SiteUserRepository;
+import com.egyetem.szakdolgozat.database.team.persistance.Team;
+import com.egyetem.szakdolgozat.database.team.persistance.TeamRepository;
+import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
+import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +57,17 @@ public class TestController {
        System.out.println(Seeder.seedList(teamSkillDtoList));
 
        System.out.println(Seeder.seedTournament(tournamentRepository.findById(4L).get()));
+
+    }
+
+    @GetMapping(value = "/api/test/ranker/")
+    public void testRanker() {
+
+        Tournament tournament = tournamentRepository.findById(5L).get();
+
+        RankingService rankingService = new RankingService(tournamentRepository);
+
+        rankingService.updateRank(tournament);
 
     }
 }

@@ -1,6 +1,6 @@
 package com.egyetem.szakdolgozat.seeding;
 
-import com.egyetem.szakdolgozat.team.persistance.Team;
+import com.egyetem.szakdolgozat.database.team.persistance.Team;
 
 import java.util.Objects;
 
