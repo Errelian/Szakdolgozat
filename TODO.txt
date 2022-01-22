@@ -78,7 +78,7 @@ WRITE RIOT API STUFF:
 	research how to make the queries <
 
 	research how to make many fast async http calls<
-		likely will need spring @Async and make it update a tournament's DB part with a "currently being updated" boolean to true to avoid tournaments starting while its being updated
+		X likely will need spring @Async and make it update a tournament's DB part with a "currently being updated" boolean to true to avoid tournaments starting while its being updated
 
 	update DB tournament field with "currently_updating" boolean that the rank updating method will set and unset to make sure that we keep consistency <
 
@@ -99,8 +99,9 @@ WRITE RIOT API STUFF:
 	
 	 X write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi XX//likely nope, i will need a new api key every day. That or a personal key.
 
-	add something to track timeouts	
-	handle null values
+	add something to track and prevent timeouts	<
+	make it actually async <
+	handle null values <
 
 MAKE ALL TOURNAMENT METHODS AWARE OF "currently updating":
 	tournamentController etc.

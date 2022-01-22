@@ -18,6 +18,7 @@ import reactor.core.publisher.Flux;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class RankingService {
@@ -26,6 +27,11 @@ public class RankingService {
     private static final String SUMMONER_URL = "/summoner/v4/summoners/by-name/%s";
     private static final String RANK_URL = "/league/v4/entries/by-summoner/%s";
     private static final String RIOT_TOKEN = System.getenv("RIOT_TOKEN");
+
+    private static final int ONE_SECOND = 1010;
+    private static final int TWO_MINUTES = 120100; //in milliseconds, a little extra to make sure we are not getting rate limited
+
+    private static int REQUEST_COUNTER = 0;
 
 
     TournamentRepository tournamentRepository;
@@ -38,15 +44,15 @@ public class RankingService {
     }
 
 
-    @Async("asyncExecutor")
-    public void updateRank(Tournament tournament) throws ResourceNotFoundException {
+    @Async
+    public void updateRank(Tournament tournament){
 
         tournament.setUpdating(true);
         tournamentRepository.save(tournament);
 
         String url = riotBaseUrlBuilder(BASE_URL, tournament.getRegionId());
 
-        final WebClient webClient = WebClient
+        WebClient webClient = WebClient
             .builder()
             .baseUrl(url)
             .defaultHeader("X-Riot-Token", RIOT_TOKEN)
@@ -61,29 +67,63 @@ public class RankingService {
         }
 
 
-        List<IdDeserializer> ids = Flux.fromIterable(accounts)
-            .flatMap(account -> webClient.get().uri(String.format(SUMMONER_URL, account.getInGameName()))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(IdDeserializer.class))
-            .collectList()
-            .block();
-        System.out.println(ids);
 
-        List<List<RankDeserializer>> rankings = new ArrayList<>();
-
-        if (ids != null) {
-            rankings = Flux.fromIterable(ids)
-                .flatMap(idDeserializer -> webClient.get().uri(String.format(RANK_URL, idDeserializer.getId()))
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<RankDeserializer>>() {
-                    }))
-                .collectList()
-                .block();
-            System.out.println(rankings);
+        List<List<RegionalAccount>> partitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+        for (int i = 0; i < accounts.size(); i += 20) {
+            partitions.add(accounts.subList(i, Math.min(i + 20, accounts.size())));
         }
 
+        try {
+            List<IdDeserializer> ids = new ArrayList<>();
+            for (int i = 0; i < partitions.size(); ) {
+                if (REQUEST_COUNTER <= 100 || REQUEST_COUNTER + partitions.get(i).size() < 100) {
+                    ids.addAll(Objects.requireNonNull(Flux.fromIterable(partitions.get(i))
+                        .flatMap(account -> webClient.get().uri(String.format(SUMMONER_URL, account.getInGameName()))
+                            .accept(MediaType.APPLICATION_JSON)
+                            .retrieve()
+                            .bodyToMono(IdDeserializer.class))
+                        .collectList()
+                        .block()));
+                    REQUEST_COUNTER += partitions.get(i).size();
+                    Thread.sleep(ONE_SECOND);
+                    i++;
+                } else {
+                    Thread.sleep(TWO_MINUTES);
+                    REQUEST_COUNTER = 0;
+                }
+            }
+            System.out.println(ids);
+
+            List<List<RankDeserializer>> rankings = new ArrayList<>();
+
+            List<List<IdDeserializer>> idPartitions =
+                new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+            for (int i = 0; i < ids.size(); i += 20) {
+                idPartitions.add(ids.subList(i, Math.min(i + 20, ids.size())));
+            }
+
+            for (int i = 0; i < idPartitions.size(); ) {
+                if (REQUEST_COUNTER <= 100 || REQUEST_COUNTER + partitions.get(i).size() < 100) {
+                    rankings = Flux.fromIterable(idPartitions.get(i))
+                        .flatMap(idDeserializer -> webClient.get().uri(String.format(RANK_URL, idDeserializer.getId()))
+                            .accept(MediaType.APPLICATION_JSON)
+                            .retrieve()
+                            .bodyToMono(new ParameterizedTypeReference<List<RankDeserializer>>() {
+                            }))
+                        .collectList()
+                        .block();
+
+                    REQUEST_COUNTER += idPartitions.get(i).size();
+                    Thread.sleep(ONE_SECOND);
+                    i++;
+                } else {
+                    Thread.sleep(TWO_MINUTES);
+                    REQUEST_COUNTER = 0;
+                }
+            }
+
+
+        System.out.println(rankings);
         if (rankings != null) {
             for (List<RankDeserializer> ranks : rankings) {
                 short highest = 0;
@@ -94,7 +134,7 @@ public class RankingService {
                 }
                 RegionalAccount regionalAccount =
                     regionalAccountRepository.findByInGameName(ranks.get(0).getSummonerName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Regional account not found."));
+                        .get();
 
                 regionalAccount.setRank(highest);
 
@@ -102,6 +142,9 @@ public class RankingService {
             }
         }
 
+        }catch(Exception e){
+            System.out.println("LOG: INTERRUPTED");
+        }
         tournament.setUpdating(false);
         tournamentRepository.save(tournament);
     }

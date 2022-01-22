@@ -63,14 +63,4 @@ public class TestController {
 
     }
 
-    @GetMapping(value = "/api/test/ranker/")
-    public void testRanker() {
-
-        Tournament tournament = tournamentRepository.findById(5L).get();
-
-        RankingService rankingService = new RankingService(tournamentRepository, regionalAccountRepository);
-
-        rankingService.updateRank(tournament);
-
-    }
 }
