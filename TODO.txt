@@ -86,24 +86,27 @@ WRITE RIOT API STUFF:
 
 	create a method to construct the api URL <
 
-	create Async method that updates all regionalAccounts relevant to a tournament:
+	create Async method that updates all regionalAccounts relevant to a tournament: <
 		it sets "currently_updating" to true at the start <
 		gets all relevant RegionalAccounts <
 		gets all encrypted ids relevant to the user names and puts them into a list: List<IdDeserializer> (???) <
 		uses all encrypted ids to fetch the highest ranks of every RegionalAccount and updates it through the Enum
-			gets a list of lists as in : List<List<RankDeserializer>>
-			for each inner list selects only the highest rank and uses that to save
-		saves them all down
+			gets a list of lists as in : List<List<RankDeserializer>> <
+			for each inner list selects only the highest rank and uses that to save <
+		saves them all down <
 		it sets "currently_updating" to false at the end <
 
 	
-	write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi XX//likely nope, i will need a new api key every day. That or a personal key.
+	 X write a simple crontab to update the api key every 12 hours and have it run on the RBerry Pi XX//likely nope, i will need a new api key every day. That or a personal key.
 
 	add something to track timeouts	
 	handle null values
 
 MAKE ALL TOURNAMENT METHODS AWARE OF "currently updating":
 	tournamentController etc.
+
+ADD A LISTENER THAT WOULD SEND E-MAILS 1 DAY AND 1 HOUR BEFORE A TOURNAMENT:
+	#TODO#
 
 CONSIDER ADDING IMAGES:
 	!!!!REVERSE PROXIY STUFF???!!!!!

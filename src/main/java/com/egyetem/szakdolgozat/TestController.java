@@ -1,5 +1,6 @@
 package com.egyetem.szakdolgozat;
 
+import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.ranking.RankingService;
 import com.egyetem.szakdolgozat.seeding.Seeder;
@@ -22,12 +23,14 @@ public class TestController {
     TeamRepository teamRepository;
     SiteUserRepository siteUserRepository;
     TournamentRepository tournamentRepository;
+    RegionalAccountRepository regionalAccountRepository;
 
     @Autowired
-    public TestController(TeamRepository teamRepository, SiteUserRepository siteUserRepository, TournamentRepository tournamentRepository) {
+    public TestController(TeamRepository teamRepository, SiteUserRepository siteUserRepository, TournamentRepository tournamentRepository, RegionalAccountRepository regionalAccountRepository) {
         this.teamRepository = teamRepository;
         this.siteUserRepository = siteUserRepository;
         this.tournamentRepository = tournamentRepository;
+        this.regionalAccountRepository = regionalAccountRepository;
     }
 
     @GetMapping(value = "/api/test/seeder/teamskill")
@@ -65,7 +68,7 @@ public class TestController {
 
         Tournament tournament = tournamentRepository.findById(5L).get();
 
-        RankingService rankingService = new RankingService(tournamentRepository);
+        RankingService rankingService = new RankingService(tournamentRepository, regionalAccountRepository);
 
         rankingService.updateRank(tournament);
 

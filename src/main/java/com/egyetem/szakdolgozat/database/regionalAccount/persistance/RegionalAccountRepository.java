@@ -9,4 +9,6 @@ public interface RegionalAccountRepository  extends JpaRepository<RegionalAccoun
 
 
     Optional<Set<RegionalAccount>> findByUserId(Long userId);
+
+    Optional<RegionalAccount> findByInGameName(String inGameName);
 }
