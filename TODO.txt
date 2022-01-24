@@ -47,7 +47,7 @@ ADD DB-EXCEPTION HANDLING TO BACKEND:
 	SITEUSERCONTROLLER <
 	REGIONALACCOUNTCONTROLLER <
 	TEAMCONTROLLER <
-	TOURNAMEN T<
+	TOURNAMENT<
 ADD HTTP RESPONSE CODES HANDLING TO BACKEND: <
 REMAKE BACKEND WITH OPTIONALS: <
 
@@ -64,7 +64,7 @@ WRITE SEEDING ALGO:
 	PUT IT INTO A LIST<TeamSkillDto> <
 	Write an algo that orders that list based on the skill level <
 	it returns that list<
-	make updating ranks thru riot api optional
+	make updating ranks thru riot api optional <
 	write algo that takes only tournament and seeds it <
 
 	CREATE REST CONTROLLER FOR SEEDING <
@@ -103,11 +103,21 @@ WRITE RIOT API STUFF:
 	make it actually async <
 	handle null values <
 
-MAKE ALL TOURNAMENT METHODS AWARE OF "currently updating":
-	tournamentController etc.
+MAKE ALL TOURNAMENT METHODS AWARE OF "currently updating": <
+	tournamentController etc. <
 
-ADD A LISTENER THAT WOULD SEND E-MAILS 1 DAY AND 1 HOUR BEFORE A TOURNAMENT:
-	#TODO#
+ADD LOGGING TO IT:
+	#TODO //Later, log4j still needs to be fixed
+
+ADD A LISTENER THAT WOULD SEND E-MAILS 1 DAY AND 1 HOUR BEFORE A TOURNAMENT: X scratch this probably.
+	make something that triggers 1 day before the tournament
+
+ADD AN ASYNC EMAIL SENDER THAT SENDS OUTCOME EMAILS TO ALL USERS OF A TOURNAMENT WHEN THE VICTOR IS DECIDED:
+
+
+SET UP HTTPS CLOUDFLARE:
+	#TODO
+	
 
 CONSIDER ADDING IMAGES:
 	!!!!REVERSE PROXIY STUFF???!!!!!

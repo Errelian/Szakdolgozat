@@ -7,7 +7,11 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentReposi
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
+import com.egyetem.szakdolgozat.notify.Notifier;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -20,27 +24,32 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 public class TournamentController {
 
-    TournamentRepository tournamentRepository;
-    TournamentToTeamsRepository tournamentToTeamsRepository;
-    TeamRepository teamRepository;
+    private TournamentRepository tournamentRepository;
+    private TournamentToTeamsRepository tournamentToTeamsRepository;
+    private TeamRepository teamRepository;
+    private TaskExecutor executor;
 
     @Autowired
     public TournamentController(TournamentRepository tournamentRepository,
                                 TournamentToTeamsRepository tournamentToTeamsRepository,
-                                TeamRepository teamRepository) {
+                                TeamRepository teamRepository,
+                                @Qualifier("taskExecutor") TaskExecutor taskExecutor) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentToTeamsRepository = tournamentToTeamsRepository;
         this.teamRepository = teamRepository;
+        this.executor = taskExecutor;
     }
 
     @PostMapping(value = "/api/tournament/create", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createNewTournament(
-        @RequestBody Tournament tournament) { //TODO EXCEPTION HANDLING THIS APPLIES TO THE ENTIRE FILE
+        @RequestBody Tournament tournament) {
         try {
             if (tournament.getTournamentName().isBlank() || tournament.getCreatorId().toString().isBlank() ||
                 tournament.getRegionId().isBlank() || tournament.getStartTime().toString().isBlank()) {
@@ -57,14 +66,14 @@ public class TournamentController {
     }
 
 
-    //TODO spring secu: check if logged in id == creatorId
+    //TODO spring secu/oauth2: check if logged in id == creatorId
     @DeleteMapping(value = "/api/tournament/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteTournament(@RequestBody Map<String, Long> json) {
         tournamentRepository.deleteById(json.get("tournamentId"));
         return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
     }
 
-    //TODO spring secu: check if logged in id == creatorID
+    //TODO spring secu/oauth2: check if logged in id == creatorID
     @PutMapping(value = "/api/tournament/change/name", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeTournamentName(@RequestBody Map<String, String> json) {
 
@@ -102,6 +111,23 @@ public class TournamentController {
             tournament.setVictorId(Long.parseLong(json.get("victorId")));
             tournamentRepository.save(tournament);
 
+
+            List<Team> teams = new ArrayList<>();
+            for (TournamentToTeams tournamentToTeams : tournament.getTeams()){
+                teams.add(tournamentToTeams.getTeam());
+            }
+            for (Team team : teams){
+                team.getTeamMembers();
+            }
+
+            executor.execute(()-> {
+                try {
+                    Notifier.notifyUsers(tournament);
+                } catch (UnirestException e) {
+                    e.printStackTrace();
+                }
+            });
+
             return new ResponseEntity<>("\"Saved victor change.\"", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
@@ -118,6 +144,9 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findByTournamentName(json.get("tournamentName"))
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
+            if (tournament.getUpdating()){
+                return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
+            }
 
             tournament.setRegionId(json.get("regionId"));
             tournamentRepository.save(tournament);
@@ -172,6 +201,10 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findById(Long.parseLong(json.get("tournamentId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Tournament not found."));
 
+            if (tournament.getUpdating()){
+                return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
+            }
+
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Team not found."));
 
@@ -203,6 +236,10 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findById(Long.parseLong(json.get("tournamentId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Tournament not found."));
 
+            if (tournament.getUpdating()){
+                return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
+            }
+
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Team not found."));
 
@@ -219,7 +256,7 @@ public class TournamentController {
 
     //Position can only be modified by the backend, so this is only for elimination
     @PutMapping(value = "api/tournament/modify/team", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> modifyTeam(@RequestBody Map<String, Long> json) {
+    public ResponseEntity<Object> eliminateTeam(@RequestBody Map<String, Long> json) {
 
         try {
             if (json.get("eliminationRound") > 0L || json.get("tournamentId") > 0L || json.get("teamId") > 0L) {

@@ -2,6 +2,8 @@ package com.egyetem.szakdolgozat;
 
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
+import com.egyetem.szakdolgozat.notify.Notifier;
 import com.egyetem.szakdolgozat.ranking.RankingService;
 import com.egyetem.szakdolgozat.seeding.Seeder;
 import com.egyetem.szakdolgozat.seeding.TeamSkillDto;
@@ -61,6 +63,21 @@ public class TestController {
 
        System.out.println(Seeder.seedTournament(tournamentRepository.findById(4L).get()));
 
+    }
+
+    @GetMapping("/api/test/email/")
+    public void testEmail(){
+        Tournament tournament = tournamentRepository.findById(5L).get();
+
+        System.out.println("waaaa");
+
+        try {
+            Notifier.notifyUsers(tournament);
+        }catch (Exception e){
+
+            System.out.println(e);
+            System.out.println("asd");
+        }
     }
 
 }
