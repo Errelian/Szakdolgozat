@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +23,12 @@ import java.util.Map;
 public class SiteUserController {
 
     SiteUserRepository siteUserRepository;
+    PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SiteUserController(SiteUserRepository siteUserRepository) {
+    public SiteUserController(SiteUserRepository siteUserRepository, PasswordEncoder passwordEncoder) {
         this.siteUserRepository = siteUserRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping(value = "/api/users/{userId}", produces = "application/json")
@@ -89,7 +92,7 @@ public class SiteUserController {
             if (!(registerUser.getUsername().isBlank() || registerUser.getPassword().isBlank() ||
                 registerUser.geteMail().isBlank())) {
 
-                SiteUser user = new SiteUser(registerUser.getUsername(), registerUser.getPassword(),
+                SiteUser user = new SiteUser(registerUser.getUsername(), passwordEncoder.encode(registerUser.getPassword()),
                     registerUser.geteMail()); //TODO add pw hashing to this
 
                 siteUserRepository.save(user);
