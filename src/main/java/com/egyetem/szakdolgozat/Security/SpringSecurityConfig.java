@@ -25,6 +25,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @Override
     public CustomUserDetailsService userDetailsService(){
         return this.customUserDetailsService;
     }

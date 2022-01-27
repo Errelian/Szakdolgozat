@@ -7,6 +7,8 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentReposi
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
+import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
+import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import com.egyetem.szakdolgozat.notify.Notifier;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,46 +38,68 @@ public class TournamentController {
     private TournamentRepository tournamentRepository;
     private TournamentToTeamsRepository tournamentToTeamsRepository;
     private TeamRepository teamRepository;
+    private SiteUserRepository siteUserRepository;
     private TaskExecutor executor;
 
     @Autowired
     public TournamentController(TournamentRepository tournamentRepository,
                                 TournamentToTeamsRepository tournamentToTeamsRepository,
                                 TeamRepository teamRepository,
-                                @Qualifier("taskExecutor") TaskExecutor taskExecutor) {
+                                @Qualifier("taskExecutor") TaskExecutor taskExecutor,
+                                SiteUserRepository siteUserRepository) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentToTeamsRepository = tournamentToTeamsRepository;
         this.teamRepository = teamRepository;
         this.executor = taskExecutor;
+        this.siteUserRepository = siteUserRepository;
     }
 
     @PostMapping(value = "/api/tournament/create", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createNewTournament(
         @RequestBody Tournament tournament) {
         try {
-            if (tournament.getTournamentName().isBlank() || tournament.getCreatorId().toString().isBlank() ||
+            if (tournament.getTournamentName().isBlank() ||
                 tournament.getRegionId().isBlank() || tournament.getStartTime().toString().isBlank()) {
                 return new ResponseEntity<>(
                     "\"Error, no field can be empty, null, or compromised of only whitespaces.\"",
                     HttpStatus.BAD_REQUEST);
             }
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+            tournament.setVictorId(siteUser.getId());
+
             tournamentRepository.save(tournament);
             return new ResponseEntity<>("\"Saved tournament.\"", HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("\"Tournament name already in use.\"", HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
 
 
-    //TODO spring secu/oauth2: check if logged in id == creatorId
     @DeleteMapping(value = "/api/tournament/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteTournament(@RequestBody Map<String, Long> json) {
-        tournamentRepository.deleteById(json.get("tournamentId"));
-        return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+            Tournament tournament = tournamentRepository.findById(json.get("tournamentId"))
+                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
+
+            if(tournament.getCreatorId().equals(siteUser.getId())){
+                tournamentRepository.deleteById(json.get("tournamentId"));
+                return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+        } catch (ResourceNotFoundException e){
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
     }
 
-    //TODO spring secu/oauth2: check if logged in id == creatorID
     @PutMapping(value = "/api/tournament/change/name", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeTournamentName(@RequestBody Map<String, String> json) {
 
@@ -81,14 +107,20 @@ public class TournamentController {
             if (json.get("newName").isBlank() || json.get("oldName").isBlank()) {
                 return new ResponseEntity<>("\"Names cannot be blank\"", HttpStatus.BAD_REQUEST);
             }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
             Tournament tournament = tournamentRepository.findByTournamentName(json.get("oldName"))
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
-
-            tournament.setTournamentName(json.get("newName"));
-            tournamentRepository.save(tournament);
-
-            return new ResponseEntity<>("\"Saved tournament name change.\"", HttpStatus.OK);
+            if (siteUser.getId().equals(tournament.getCreatorId())){
+                tournament.setTournamentName(json.get("newName"));
+                tournamentRepository.save(tournament);
+                return new ResponseEntity<>("\"Saved tournament name change.\"", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
@@ -104,23 +136,34 @@ public class TournamentController {
             if (json.get("victorId").isBlank() || json.get("tournamentName").isBlank()) {
                 return new ResponseEntity<>("\"VictorID or tournamentName cannot be blank\"", HttpStatus.BAD_REQUEST);
             }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
             Tournament tournament = tournamentRepository.findByTournamentName(json.get("tournamentName"))
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
 
-            tournament.setVictorId(Long.parseLong(json.get("victorId")));
-            tournamentRepository.save(tournament);
+            if (siteUser.getId().equals(tournament.getCreatorId())){
+                tournament.setVictorId(Long.parseLong(json.get("victorId")));
+                tournamentRepository.save(tournament);
+            }
+            else{
+                return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+            }
+
 
 
             List<Team> teams = new ArrayList<>();
-            for (TournamentToTeams tournamentToTeams : tournament.getTeams()){
+            for (TournamentToTeams tournamentToTeams : tournament.getTeams()) {
                 teams.add(tournamentToTeams.getTeam());
             }
-            for (Team team : teams){
+            for (Team team : teams) {
                 team.getTeamMembers();
             }
 
-            executor.execute(()-> {
+            executor.execute(() -> {
                 try {
                     Notifier.notifyUsers(tournament);
                 } catch (UnirestException e) {
@@ -134,7 +177,8 @@ public class TournamentController {
         }
     }
 
-    @PutMapping(value = "/api/tournament/change/region", consumes = "application/json", produces = "application/json") //TODO EXCEPTION HANDLING
+    @PutMapping(value = "/api/tournament/change/region", consumes = "application/json", produces = "application/json")
+    //TODO EXCEPTION HANDLING
     public ResponseEntity<String> changeRegion(@RequestBody Map<String, String> json) {
 
         try {
@@ -144,14 +188,21 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findByTournamentName(json.get("tournamentName"))
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
-            if (tournament.getUpdating()){
+            if (tournament.getUpdating()) {
                 return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
             }
 
-            tournament.setRegionId(json.get("regionId"));
-            tournamentRepository.save(tournament);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-            return new ResponseEntity<>("\"Saved regionID change.\"", HttpStatus.OK);
+            if (siteUser.getId().equals(tournament.getCreatorId())) {
+                tournament.setRegionId(json.get("regionId"));
+                tournamentRepository.save(tournament);
+                return new ResponseEntity<>("\"Saved regionID change.\"", HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
@@ -201,18 +252,25 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findById(Long.parseLong(json.get("tournamentId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Tournament not found."));
 
-            if (tournament.getUpdating()){
+            if (tournament.getUpdating()) {
                 return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
             }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Team not found."));
 
-            tournamentToTeams.setTeam(team);
-            tournamentToTeams.setTournament(tournament);
+            if (siteUser.getId().equals(team.getCreatorId())) {
+                tournamentToTeams.setTeam(team);
+                tournamentToTeams.setTournament(tournament);
+                tournamentToTeamsRepository.save(tournamentToTeams);
+                return ResponseEntity.ok("\"Successfully saved.\"");
+            }
 
-            tournamentToTeamsRepository.save(tournamentToTeams);
-            return ResponseEntity.ok("\"Successfully saved.\"");
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the team.\"", HttpStatus.FORBIDDEN);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("Resource not found: " + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
@@ -236,20 +294,26 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findById(Long.parseLong(json.get("tournamentId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Tournament not found."));
 
-            if (tournament.getUpdating()){
+            if (tournament.getUpdating()) {
                 return new ResponseEntity<>("\"Error, tournament is under update. Try later.\"", HttpStatus.CONFLICT);
             }
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId"))).orElseThrow(
                 () -> new ResourceNotFoundException("Team not found."));
 
+            if (siteUser.getId().equals(team.getCreatorId())) {
+                tournamentToTeams.setTeam(team);
+                tournamentToTeams.setTournament(tournament);
 
-            tournamentToTeams.setTeam(team);
-            tournamentToTeams.setTournament(tournament);
-
-            tournamentToTeamsRepository.delete(tournamentToTeams);
-            return new ResponseEntity<>("\"Successfully deleted.\"", HttpStatus.OK);
-        }catch(ResourceNotFoundException e){
+                tournamentToTeamsRepository.delete(tournamentToTeams);
+                return new ResponseEntity<>("\"Successfully deleted.\"", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the team.\"", HttpStatus.FORBIDDEN);
+        } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
@@ -264,11 +328,20 @@ public class TournamentController {
                     .findTournamentToTeamsById(new TournamentToTeamsCKey(json.get("teamId"), json.get("tournamentId")))
                     .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
-                tournamentToTeams.setEliminationRound(json.get("eliminationRound").intValue());
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                tournamentToTeamsRepository.save(tournamentToTeams);
+                Tournament tournament = tournamentRepository.findById(json.get("tournamentId")).orElseThrow(()-> new ResourceNotFoundException("Tournament not found"));
 
-                return new ResponseEntity<>("\"Successfully modifed.\"", HttpStatus.OK);
+
+                if(siteUser.getId().equals(tournament.getCreatorId())) {
+                    tournamentToTeams.setEliminationRound(json.get("eliminationRound").intValue());
+                    tournamentToTeamsRepository.save(tournamentToTeams);
+
+                    return new ResponseEntity<>("\"Successfully modified.\"", HttpStatus.OK);
+                }
+                return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
             } else {
                 return new ResponseEntity<>("\"Error, no field can be smaller than 0 or left blank.\"",
                     HttpStatus.BAD_REQUEST);

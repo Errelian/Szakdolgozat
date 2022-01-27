@@ -25,6 +25,9 @@ public class Team {
     @Column(name = "name_team",nullable = false)
     private String teamName;
 
+    @Column(name = "id_creator", nullable = false)
+    private Long creatorId;
+
     @ManyToMany
     @JoinTable(
         name = "team_member",
@@ -43,6 +46,17 @@ public class Team {
 
     public Team(String teamName) {
         this.teamName = teamName;
+    }
+
+    public Team(Long id, String teamName, Long creatorId) {
+        this.id = id;
+        this.teamName = teamName;
+        this.creatorId = creatorId;
+    }
+
+    public Team(String teamName, Long creatorId) {
+        this.teamName = teamName;
+        this.creatorId = creatorId;
     }
 
     //@OneToMany(mappedBy = "team")
@@ -96,5 +110,13 @@ public class Team {
 
     public void setTeamMembers(Set<SiteUser> teamMembers) {
         this.teamMembers = teamMembers;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 }

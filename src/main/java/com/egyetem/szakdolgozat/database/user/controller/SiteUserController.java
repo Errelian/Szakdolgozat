@@ -25,6 +25,9 @@ public class SiteUserController {
     SiteUserRepository siteUserRepository;
     PasswordEncoder passwordEncoder;
 
+
+
+    //TODO ADD SPRING SECU TO THIS
     @Autowired
     public SiteUserController(SiteUserRepository siteUserRepository, PasswordEncoder passwordEncoder) {
         this.siteUserRepository = siteUserRepository;
@@ -93,7 +96,7 @@ public class SiteUserController {
                 registerUser.geteMail().isBlank())) {
 
                 SiteUser user = new SiteUser(registerUser.getUsername(), passwordEncoder.encode(registerUser.getPassword()),
-                    registerUser.geteMail()); //TODO add pw hashing to this
+                    registerUser.geteMail());
 
                 siteUserRepository.save(user);
                 return new ResponseEntity<>("\"Sucessfull registration.\"", HttpStatus.OK);

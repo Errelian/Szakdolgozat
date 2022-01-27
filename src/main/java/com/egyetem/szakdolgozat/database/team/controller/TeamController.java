@@ -9,6 +9,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,8 +38,14 @@ public class TeamController {
     public ResponseEntity<String> createNewTeam(@RequestBody Map<String, String> json) {
 
         try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
             if (!json.get("teamName").isBlank()) {
-                Team team = new Team(json.get("teamName"));
+                Team team = new Team(json.get("teamName"), siteUser.getId());
 
                 teamRepository.save(team);
                 return new ResponseEntity<>("\"Successfully created new team.\"", HttpStatus.OK);
@@ -45,6 +53,8 @@ public class TeamController {
             return new ResponseEntity<>("\"Error, team name cannot be blank.\"", HttpStatus.BAD_REQUEST);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("\"Name already in use.\"", HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -53,17 +63,22 @@ public class TeamController {
         try {
             if (!(json.get("teamNameNew").isBlank() || json.get("changerId").isBlank())) {
 
-                Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
-                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
-                SiteUser changer = siteUserRepository.findUserById(Long.parseLong(json.get("changerId")))
+
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                SiteUser changer = siteUserRepository.findSiteUserByUsername(authentication.getName())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                if (team.getTeamMembers().contains(changer)) {
+                Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+
+
+                if (team.getCreatorId().equals(changer.getId())) {
                     team.setTeamName(json.get("teamNameNew"));
                     teamRepository.save(team);
                     return new ResponseEntity<>("\"Successfully changed team name.\"", HttpStatus.OK);
                 }
-                return new ResponseEntity<>("\"You are not part of that team\"", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("\"You are not the creator of that team\"", HttpStatus.FORBIDDEN);
             }
             return new ResponseEntity<>("\"Error, the teamname or your id cannot be blank\"", HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException e) {
@@ -74,7 +89,9 @@ public class TeamController {
     @PutMapping(value = "/api/teams/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> addUser(@RequestBody Map<String, String> json) {
         try {
-            SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("userId")))
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            SiteUser user = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found.")); //TODO
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")))
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
@@ -91,9 +108,13 @@ public class TeamController {
     @DeleteMapping(value = "/api/teams/remove", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> removeUser(@RequestBody Map<String, String> json) {
         try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
             Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
-            SiteUser user = siteUserRepository.findUserById(Long.parseLong(json.get("changerId")))
+            SiteUser user = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
 
@@ -133,10 +154,11 @@ public class TeamController {
     }
 
     @GetMapping(value = "/api/teams/byname/{teamName}", produces = "application/json")
-    public ResponseEntity<Object> getTeamByName(@PathVariable String teamName){
+    public ResponseEntity<Object> getTeamByName(@PathVariable String teamName) {
         try {
             Team team =
-                teamRepository.findByTeamName(teamName).orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+                teamRepository.findByTeamName(teamName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
 
             return new ResponseEntity<>(team, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
