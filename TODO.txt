@@ -124,12 +124,17 @@ CONSIDER ADDING IMAGES: //skip this for now
 
 ADD SPRING BOOT SECURITY TO THE PROJECT / ADD OATH 2: >likely spring security
 	spring secu first implementation done <
-	TODO make sure user doing stuff is actually the user that should
+	TODO make sure user doing stuff is actually the user that should <
 		regionalAccount <
 		team <
 		tournament <
-		siteUser
+		siteUser <
+	TODO TEST IT WITH POSTMAN
 	
+
+TESTING:
+	UNIT TESTING
+	INTEGRATION TESTING
 CREATE FRONTEND:
 	WATCH REACT TUTORIALS
 	#TODO
