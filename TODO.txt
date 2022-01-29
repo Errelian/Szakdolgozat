@@ -130,7 +130,10 @@ ADD SPRING BOOT SECURITY TO THE PROJECT / ADD OATH 2: >likely spring security
 		tournament <
 		siteUser <
 	TODO TEST IT WITH POSTMAN
-	
+		regionalAccount <
+		team <
+		tournament <
+		siteUser <
 
 TESTING:
 	UNIT TESTING

@@ -78,7 +78,7 @@ public class RegionalAccountController {
         }
     }
 
-    @DeleteMapping(value = "/regionalAccounts/delete", consumes = "application/json", produces = "application/json")
+    @DeleteMapping(value = "/api/regionalAccounts/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount) {
         try {
             SiteUser siteUser = siteUserRepository.findUserById(regionalAccount.getUserId())

@@ -110,16 +110,15 @@ public class SiteUserController {
         }
     }
 
-    @PutMapping(value = "/api/users/{userId}/password", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> changePassword(@PathVariable Long userId, @RequestBody Map<String, String> json) {
+    @PutMapping(value = "/api/users/password", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Object> changePassword(@RequestBody Map<String, String> json) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-
-            if (siteUser.getPassword().equals(passwordEncoder.encode(json.get("oldPassword"))))
+            if (passwordEncoder.matches(json.get("oldPassword"), siteUser.getPassword()))
             {
                 siteUser.setPassword(passwordEncoder.encode(json.get("newPassword")));
                 siteUserRepository.save(siteUser);
@@ -132,8 +131,8 @@ public class SiteUserController {
 
     }
 
-    @DeleteMapping(value = "/api/users/{userId}/delete", produces = "application/json")
-    public ResponseEntity<Object> deleteAccount(@PathVariable Long userId, @RequestBody Map<String, String> json) {
+    @DeleteMapping(value = "/api/users/delete", produces = "application/json")
+    public ResponseEntity<Object> deleteAccount(@RequestBody Map<String, String> json) {
 
         try {
 
@@ -141,7 +140,7 @@ public class SiteUserController {
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-            if (siteUser.getPassword().equals(passwordEncoder.encode(json.get("oldPassword")))){
+            if (passwordEncoder.matches(json.get("password"), siteUser.getPassword())){
                 siteUserRepository.delete(siteUser);
                 return new ResponseEntity<>("\"User deleted.\"", HttpStatus.OK);
             }

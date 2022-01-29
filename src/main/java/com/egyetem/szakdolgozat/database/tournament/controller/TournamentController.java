@@ -69,7 +69,8 @@ public class TournamentController {
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-            tournament.setVictorId(siteUser.getId());
+            tournament.setCreatorId(siteUser.getId());
+            tournament.setUpdating(false);
 
             tournamentRepository.save(tournament);
             return new ResponseEntity<>("\"Saved tournament.\"", HttpStatus.OK);
@@ -160,7 +161,9 @@ public class TournamentController {
                 teams.add(tournamentToTeams.getTeam());
             }
             for (Team team : teams) {
-                team.getTeamMembers();
+                for (SiteUser user : team.getTeamMembers()){
+                    user.geteMail();
+                }
             }
 
             executor.execute(() -> {
@@ -178,7 +181,6 @@ public class TournamentController {
     }
 
     @PutMapping(value = "/api/tournament/change/region", consumes = "application/json", produces = "application/json")
-    //TODO EXCEPTION HANDLING
     public ResponseEntity<String> changeRegion(@RequestBody Map<String, String> json) {
 
         try {

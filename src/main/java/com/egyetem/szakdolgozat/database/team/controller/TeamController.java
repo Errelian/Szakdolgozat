@@ -61,8 +61,7 @@ public class TeamController {
     @PutMapping(value = "/api/teams/changeName", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> changeName(@RequestBody Map<String, String> json) {
         try {
-            if (!(json.get("teamNameNew").isBlank() || json.get("changerId").isBlank())) {
-
+            if (!(json.get("newName").isBlank())) {
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -74,7 +73,7 @@ public class TeamController {
 
 
                 if (team.getCreatorId().equals(changer.getId())) {
-                    team.setTeamName(json.get("teamNameNew"));
+                    team.setTeamName(json.get("newName"));
                     teamRepository.save(team);
                     return new ResponseEntity<>("\"Successfully changed team name.\"", HttpStatus.OK);
                 }
@@ -112,7 +111,7 @@ public class TeamController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 
-            Team team = teamRepository.findByTeamName(json.get("teamNameOld"))
+            Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")))
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
             SiteUser user = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
