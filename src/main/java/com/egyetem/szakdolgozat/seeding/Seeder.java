@@ -43,7 +43,7 @@ public class Seeder {
         return new TeamSkillDto(team, skillSum / memberCount, false);
     }
 
-    public static ArrayList<ArrayList<TeamSkillDto>> seedList(List<TeamSkillDto> teamSkills) { //TODO ADD STACKOVERFLOW ATTRIBUTION
+    public static ArrayList<ArrayList<TeamSkillDto>> seedList(List<TeamSkillDto> teamSkills) {
         if (teamSkills.size() < 2) {
             return new ArrayList<>();
         }
@@ -59,23 +59,23 @@ public class Seeder {
 
         for (int currRound = 1; currRound < rounds; currRound++) {
             List<ArrayList<Integer>> thisRoundMatches = new ArrayList<>();
-            int sum = (int) Math.pow(2, currRound + 1) + 1; //SUS
+            int sum = (int) Math.pow(2, currRound + 1) + 1; //this is probably not a nice thing to do
 
             for (ArrayList<Integer> match : matches) {
-                Integer first = switchToGhostMatchup(match.get(0), teamSkills.size());
-                Integer second = switchToGhostMatchup(sum - match.get(0), teamSkills.size());
+                Integer home = switchToGhostMatchup(match.get(0), teamSkills.size());
+                Integer away = switchToGhostMatchup(sum - match.get(0), teamSkills.size());
 
                 ArrayList<Integer> temporaryList = new ArrayList<>();
-                temporaryList.add(first);
-                temporaryList.add(second);
+                temporaryList.add(home);
+                temporaryList.add(away);
                 thisRoundMatches.add(temporaryList);
 
-                first = switchToGhostMatchup(sum - match.get(1), teamSkills.size());
-                second = switchToGhostMatchup(match.get(1), teamSkills.size());
+                home = switchToGhostMatchup(sum - match.get(1), teamSkills.size());
+                away = switchToGhostMatchup(match.get(1), teamSkills.size());
 
                 ArrayList<Integer> temporaryList2 = new ArrayList<>();
-                temporaryList2.add(first);
-                temporaryList2.add(second);
+                temporaryList2.add(home);
+                temporaryList2.add(away);
                 thisRoundMatches.add(temporaryList2);
 
             }

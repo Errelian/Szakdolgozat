@@ -33,22 +33,18 @@ public class RegionalAccountController {
         this.siteUserRepository = siteUserRepository;
     }
 
-    @GetMapping(value = "/api/regionalAccounts/{userId}/", produces = "application/json")
-    public ResponseEntity<Object> getAll(@PathVariable Long userId) {
+    @GetMapping(value = "/api/regionalAccounts/", produces = "application/json")
+    public ResponseEntity<Object> getAll() {
         try {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findUserById(userId)
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
             System.out.println(authentication.getName());
             System.out.println(siteUser.getUsername());
 
-            if (!(authentication.getName().equals(siteUser.getUsername()))){
-                return new ResponseEntity<>("\"Error, that's not you.\"", HttpStatus.FORBIDDEN);
-            }
-
-            Set<RegionalAccount> regionalAccounts = regionalAccountRepository.findByUserId(userId)
+            Set<RegionalAccount> regionalAccounts = regionalAccountRepository.findByUserId(siteUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("\"User not found.\""));
 
             return new ResponseEntity<>(regionalAccounts, HttpStatus.OK);
@@ -61,14 +57,11 @@ public class RegionalAccountController {
     public ResponseEntity<String> updateRegionalAccountInfo(@RequestBody RegionalAccount regionalAccount) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findUserById(regionalAccount.getUserId())
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if (!(authentication.getName().equals(siteUser.getUsername()))){
-                return new ResponseEntity<>("\"Error, that's not you.\"", HttpStatus.FORBIDDEN);
-            }
-
             if (!(regionalAccount.getRegionId().isBlank() || regionalAccount.getInGameName().isBlank())) {
+                regionalAccount.setUserId(siteUser.getId());
                 regionalAccountRepository.save(regionalAccount);
                 return new ResponseEntity<>("\"Change saved.\"", HttpStatus.OK);
             }

@@ -26,7 +26,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Override
-    public CustomUserDetailsService userDetailsService(){
+    public CustomUserDetailsService userDetailsService() {
         return this.customUserDetailsService;
     }
 
@@ -47,7 +47,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .anyRequest().authenticated().and().formLogin().and().csrf().disable();
+            .anyRequest().authenticated()
+                .and().
+            formLogin()
+                .and()
+            .httpBasic()
+                .and()
+            .csrf().disable();
     }
 
     @Override

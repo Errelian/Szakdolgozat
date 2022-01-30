@@ -46,6 +46,19 @@ public class SiteUserController {
         }
     }
 
+    @GetMapping(value = "/api/users/self", produces = "application/json")
+    public ResponseEntity<Object> getSelfInfo() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+            return new ResponseEntity<>(siteUser, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage()+"\"", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping(value = "/api/users/{userId}/accounts", produces = "application/json")
     public ResponseEntity<Object> getUsersAccounts(@PathVariable Long userId) {
         try {
@@ -102,7 +115,7 @@ public class SiteUserController {
                     registerUser.geteMail());
 
                 siteUserRepository.save(user);
-                return new ResponseEntity<>("\"Sucessfull registration.\"", HttpStatus.OK);
+                return new ResponseEntity<>("\"Successful registration.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Error, username, password, or email cannot be empty.\"", HttpStatus.BAD_REQUEST);
         } catch (DataIntegrityViolationException e) {
