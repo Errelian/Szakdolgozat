@@ -62,8 +62,6 @@ class SeederTest {
         list2.add(new TeamSkillDto(team, 5.0, false));
         expected.add(list2);
 
-        System.out.println(matchups);
-
         assertIterableEquals(matchups, expected);
 
 

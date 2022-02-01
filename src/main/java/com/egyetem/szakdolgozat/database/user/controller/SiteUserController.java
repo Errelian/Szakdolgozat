@@ -81,6 +81,20 @@ public class SiteUserController {
         }
     }
 
+    @GetMapping(value = "/api/users/self/teams", produces = "application/json")
+    public ResponseEntity<Object> getSelfTeams() {
+        try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+            return new ResponseEntity<>(siteUser.getUserTeams(), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error" + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping(value = "/api/users/changeName", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> changeUsername(@RequestBody Map<String, String> json) {
         try {

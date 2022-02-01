@@ -37,6 +37,9 @@ public class TournamentToTeams {
     @Column(name = "elimination_round")
     Integer eliminationRound;
 
+    @Column(name = "current_round")
+    Integer currentRound;
+
     public TournamentToTeams(TournamentToTeamsCKey id) {
         this.id = id;
     }
@@ -51,6 +54,20 @@ public class TournamentToTeams {
         this.tournament = tournament;
         this.position = position;
         this.eliminationRound = eliminationRound;
+    }
+
+    public TournamentToTeams(Integer position, Integer eliminationRound, Integer currentRound) {
+        this.position = position;
+        this.eliminationRound = eliminationRound;
+        this.currentRound = currentRound;
+    }
+
+    public TournamentToTeams(TournamentToTeamsCKey id, Integer position, Integer eliminationRound,
+                             Integer currentRound) {
+        this.id = id;
+        this.position = position;
+        this.eliminationRound = eliminationRound;
+        this.currentRound = currentRound;
     }
 
     @Override
@@ -118,5 +135,13 @@ public class TournamentToTeams {
     @Override
     public int hashCode() {
         return Objects.hash(id, position, eliminationRound);
+    }
+
+    public Integer getCurrentRound() {
+        return currentRound;
+    }
+
+    public void setCurrentRound(Integer currentRound) {
+        this.currentRound = currentRound;
     }
 }

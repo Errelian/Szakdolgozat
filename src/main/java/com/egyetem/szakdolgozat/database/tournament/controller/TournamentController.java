@@ -338,7 +338,8 @@ public class TournamentController {
 
 
                 if(siteUser.getId().equals(tournament.getCreatorId())) {
-                    tournamentToTeams.setEliminationRound(json.get("eliminationRound").intValue());
+                    tournamentToTeams.setEliminationRound(tournamentToTeams.getCurrentRound());
+                    tournamentToTeams.setCurrentRound(tournamentToTeams.getCurrentRound()+1);
                     tournamentToTeamsRepository.save(tournamentToTeams);
 
                     return new ResponseEntity<>("\"Successfully modified.\"", HttpStatus.OK);

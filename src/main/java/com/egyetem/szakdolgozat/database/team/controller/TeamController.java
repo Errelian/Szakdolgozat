@@ -85,6 +85,29 @@ public class TeamController {
         }
     }
 
+    @DeleteMapping(value = "/api/teams/delete/{teamId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> deleteTeam(@PathVariable Long teamId) {
+        try {
+
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                SiteUser changer = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                Team team = teamRepository.findTeamById(teamId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+
+
+                if (team.getCreatorId().equals(changer.getId())) {
+                    teamRepository.delete(team);
+                    return new ResponseEntity<>("\"Successfully deleted team.\"", HttpStatus.OK);
+                }
+                return new ResponseEntity<>("\"You are not the creator of that team\"", HttpStatus.FORBIDDEN);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping(value = "/api/teams/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> addUser(@RequestBody Map<String, String> json) {
         try {
