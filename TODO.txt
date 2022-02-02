@@ -160,18 +160,22 @@ CREATE FRONTEND:
 		PLAN ALL TEAMS PAGE <
 			JOIN TEAM BUTTON //user types teamId into a field and presses a button to join it <
 		PLAN CREATE TOURNAMENT PAGE <
-		PLAN ALL TOURNAMENTS PAGE
-		PLAN SELF TOURNAMENTS PAGE
-			LEAVE TOURNAMENT
-			DELETE TOURNAMENT	
+		PLAN ALL TOURNAMENTS PAGE <	
 		PLAN ONE TOURNAMENT PAGE
-			PLAN HOW TO DISPLAY SEEDED TEAMS
-				PLAN ELIMINATE BUTTON
-				PLAN WIN BUTTON 
-			PLAN SEED BUTTON
-			PLAN UPDATE RANKS BUTTON
+			DELETE TOURNAMENT <
+			PLAN HOW TO DISPLAY SEEDED TEAMS <
+				PLAN ELIMINATE BUTTON <
+				PLAN WIN BUTTON  < likely not needed
+			PLAN SEED BUTTON <
+			PLAN UPDATE RANKS BUTTON <
 	CREATE WEBSITE ACTUALLY:
-		#TODO
+		https://spring.io/guides/tutorials/react-and-spring-data-rest/
+		SETUP REACT
+			makin progress:  https://www.baeldung.com/spring-security-login-react
+					for serving resources: https://www.baeldung.com/spring-mvc-static-resources
+		CREATE LOGIN PAGE
+		CREATE REGISTER PAGE 
+		-------
 			
 	#TODO API ENDPOINT FOR FETCHING A TEAM'S TOURNAMENTS
 
