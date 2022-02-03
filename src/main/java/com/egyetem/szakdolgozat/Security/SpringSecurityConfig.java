@@ -3,6 +3,7 @@ package com.egyetem.szakdolgozat.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,17 +47,22 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable().authorizeRequests()
+
+            .antMatchers(
+                HttpMethod.GET,
+                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico")
+            .permitAll()
+
             .anyRequest().authenticated()
-                .and().
-            formLogin().loginPage("/index.html")
-            .loginProcessingUrl("/login-process")
-            .defaultSuccessUrl("/self-user")
-            .failureUrl("/index.html?error=true")
                 .and()
-            .httpBasic()
+            .formLogin().loginPage("/login")
+            .loginProcessingUrl("/api/login-process")
+            .defaultSuccessUrl("/ui/self-user")
+                .permitAll()
                 .and()
-            .csrf().disable();
+            .httpBasic();
+
     }
 
     @Override
