@@ -68,5 +68,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/api/users/register");
+        web.ignoring().antMatchers("/register");
     }
 }

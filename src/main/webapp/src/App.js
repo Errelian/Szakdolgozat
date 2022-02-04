@@ -15,7 +15,7 @@ function App() {
         <BrowserRouter>
               <Routes>
                 <Route path='/ui/self-user' element={<Test/>}/>
-                <Route path='*' element={<Login/>}/>
+                <Route path='/login*' element={<Login/>}/>
               </Routes>
         </BrowserRouter>
     );
