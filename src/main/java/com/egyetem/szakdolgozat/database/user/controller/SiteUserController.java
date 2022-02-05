@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class SiteUserController {
@@ -133,7 +134,7 @@ public class SiteUserController {
             }
             return new ResponseEntity<>("\"Error, username, password, or email cannot be empty.\"", HttpStatus.BAD_REQUEST);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>("\"Error, email or username already in use\"", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("\"Error, email or username already in use.\"", HttpStatus.BAD_REQUEST);
         }
     }
 

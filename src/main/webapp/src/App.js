@@ -1,5 +1,6 @@
 import './App.css';
 import Login from "./login";
+import Register from "./register";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React, { Component } from 'react';
 
@@ -16,6 +17,7 @@ function App() {
               <Routes>
                 <Route path='/ui/self-user' element={<Test/>}/>
                 <Route path='/login*' element={<Login/>}/>
+                <Route path='/register' element={<Register/>}/>
               </Routes>
         </BrowserRouter>
     );

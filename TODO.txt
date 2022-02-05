@@ -170,10 +170,10 @@ CREATE FRONTEND:
 			PLAN UPDATE RANKS BUTTON <
 	CREATE WEBSITE ACTUALLY:
 		https://spring.io/guides/tutorials/react-and-spring-data-rest/
-		SETUP REACT
+		SETUP REACT <
 			makin progress:  https://www.baeldung.com/spring-security-login-react
 					for serving resources: https://www.baeldung.com/spring-mvc-static-resources
-		CREATE LOGIN PAGE
+		CREATE LOGIN PAGE <
 		CREATE REGISTER PAGE 
 		-------
 			

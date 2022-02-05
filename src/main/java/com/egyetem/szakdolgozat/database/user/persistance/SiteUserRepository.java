@@ -11,4 +11,6 @@ public interface SiteUserRepository extends JpaRepository<SiteUser, Integer> {
     Optional<SiteUser> findUserById(Long id);
 
     Optional<SiteUser> findSiteUserByUsername(String username);
+
+    boolean existsByUsername(String username);
 }

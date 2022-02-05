@@ -14,6 +14,9 @@ public class SiteUserRegisterer {
         this.eMail = eMail;
     }
 
+    public SiteUserRegisterer() {
+    }
+
     public String getUsername() {
         return username;
     }
