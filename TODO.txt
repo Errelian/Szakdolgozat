@@ -174,7 +174,9 @@ CREATE FRONTEND:
 			makin progress:  https://www.baeldung.com/spring-security-login-react
 					for serving resources: https://www.baeldung.com/spring-mvc-static-resources
 		CREATE LOGIN PAGE <
-		CREATE REGISTER PAGE 
+		CREATE REGISTER PAGE <
+		CREATE HEADER <
+		CREATE SELF-USER PAGE
 		-------
 			
 	#TODO API ENDPOINT FOR FETCHING A TEAM'S TOURNAMENTS
