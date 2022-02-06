@@ -47,8 +47,41 @@ function SelfUser(){
                     progress: undefined,
                     })
             }
-            else{
-                toast("Password was incorrect.", {
+            
+                response.json().then(json=>{
+                    toast(json, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        })
+                })
+            
+        })
+
+    }
+
+    let handleAdd = (event) =>{
+        const input = [event.target[0].value, event.target[1].value]
+
+        let jsonBody = {
+            "regionId": input[0],
+            "inGameName":input[1]
+        }
+
+        fetch('http://localhost:8080/api/regionalAccounts/update',{
+            method:'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(jsonBody),
+        }).then(response=>{
+            response.json().then( json=>{
+                toast(json, {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: true,
@@ -56,10 +89,10 @@ function SelfUser(){
                     pauseOnHover: true,
                     draggable: true,
                     progress: undefined,
-                    }) 
-            }
+                    })
+                }
+            )
         })
-
     }
 
     let userGreeter = (
@@ -74,7 +107,25 @@ function SelfUser(){
                 <button type='submit' className='standardButton'>Delete account</button>
             </form>
         </div>
-        )  
+        )
+        
+    let regionAccountAdder = (
+        <div className="loginForm">
+            Please use this form to add additional regional accounts to your account.
+          <form onSubmit={handleAdd} className='innerLoginForm'>
+              <label>Region </label>
+              <input type="text" name="region" required />
+            <br/>
+              <label>Name: </label>
+              <input type="text" name="name" required />
+            <br/>
+            <div className="button-container">          
+              <button type="submit" className='standardButton'>Add new Account.</button>
+            </div>
+            
+            </form>
+        </div>
+    )
 
     return(
         <div>
@@ -92,7 +143,7 @@ function SelfUser(){
                 />
 
                 {userGreeter}
-            <h1>Test</h1>
+                {regionAccountAdder}
         </div>
     )
 
