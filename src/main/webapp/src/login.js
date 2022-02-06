@@ -16,7 +16,7 @@ function Login(){
           navigate("/register", {replace: true})
       }
 
-      if(error == 1){
+      if(error === 1){
           var errorMsg = <h5 style={{colour: "red"}}>Invalid username or password</h5>
           console.log(errorMsg)
       }

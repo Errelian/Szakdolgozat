@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class SiteUserController {
@@ -163,13 +162,13 @@ public class SiteUserController {
     public ResponseEntity<Object> deleteAccount(@RequestBody Map<String, String> json) {
 
         try {
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
             if (passwordEncoder.matches(json.get("password"), siteUser.getPassword())){
                 siteUserRepository.delete(siteUser);
+                SecurityContextHolder.getContext().setAuthentication(null);
                 return new ResponseEntity<>("\"User deleted.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Password is wrong.\"", HttpStatus.BAD_REQUEST);
