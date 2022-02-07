@@ -7,6 +7,8 @@ function SelfUser(){
 
     var [info, setInfo] = useState(0);
 
+    var [updated, setUpdated] = useState(false);
+
     useEffect(() => {
 
         fetch('http://localhost:8080/api/users/self',{
@@ -25,6 +27,7 @@ function SelfUser(){
       }, []);
 
     let handleDelete = (event) =>{
+        event.preventDefault();
         const input = event.target[0].value
         let jsonBody = {"password": input}
 
@@ -66,6 +69,7 @@ function SelfUser(){
     }
 
     let handleAdd = (event) =>{
+        event.preventDefault();
         const input = [event.target[0].value, event.target[1].value]
 
         let jsonBody = {
@@ -91,42 +95,12 @@ function SelfUser(){
                     draggable: true,
                     progress: undefined,
                     })
+                    setUpdated(!updated)
                 }
+                
             )
         })
     }
-
-    let userGreeter = (
-        <div classname='userInfo'>
-            Hello, {info.username}!
-            <br/>
-            Your id: {info.id}
-            <br/>
-            <form onSubmit={handleDelete}>
-                <label>Password: </label>
-                <input type='password' name='password'></input>
-                <button type='submit' className='standardButton'>Delete account</button>
-            </form>
-        </div>
-        )
-        
-    const regionAccountAdder = (
-        <div className="loginForm">
-            Please use this form to add additional regional accounts to your account.
-          <form onSubmit={handleAdd} className='innerLoginForm'>
-              <label>Region </label>
-              <input type="text" name="region" required />
-            <br/>
-              <label>Name: </label>
-              <input type="text" name="name" required />
-            <br/>
-            <div className="button-container">          
-              <button type="submit" className='standardButton'>Add new Account.</button>
-            </div>
-            
-            </form>
-        </div>
-    ) 
 
     function removeRegionalAcccount(name, regionId){
 
@@ -166,6 +140,38 @@ function SelfUser(){
         })
 
     }
+
+    let userGreeter = (
+        <div className='userInfo loginForm adderForm'>
+            <p className='greeting'>Hello, {info.username}!</p>
+            <p className='id'>Your id: {info.id}</p>
+            <form onSubmit={handleDelete} className='delete_account_form'>
+                <label>Password: </label>
+                <input type='password' name='password' required></input>
+            
+                <button type='submit' className='standardButton'>Delete account</button>
+            </form>
+        </div>
+        )
+        
+    const regionAccountAdder = (
+        <div className="loginForm adderForm">
+            Please use this form to add additional regional accounts to your account.
+          <form onSubmit={handleAdd} className='innerLoginForm'>
+              <label>Region </label>
+              <input type="text" name="region" required />
+                <br/>
+              <label>Name: </label>
+              <input type="text" name="name" required />
+                <br/>
+                <div className="button-container">          
+                    <button type="submit" className='standardButton'>Add new Account.</button>
+                </div>
+            
+            </form>
+        </div>
+    ) 
+
     let regionalAccountList = 0
     if (info !== 0){
         regionalAccountList = info.regionalAccounts.map(regionalAccount =>{
@@ -173,8 +179,8 @@ function SelfUser(){
             <td style={{whiteSpace: 'nowrap'}}>{regionalAccount.inGameName}</td>
             <td>{regionalAccount.regionId}</td>
             <td>
-                <div classname='button-container'>
-                    <button className='standardButton' onClick={() => removeRegionalAcccount(regionalAccount.inGameName, regionalAccount.regionId)}>Delete</button>
+                <div className='button-container'>
+                    <button className='standardButton delete_specific_account_button' onClick={() => removeRegionalAcccount(regionalAccount.inGameName, regionalAccount.regionId)}>Delete</button>
                 </div>
             </td>
         </tr>
@@ -196,10 +202,23 @@ function SelfUser(){
                 draggable
                 pauseOnHover
                 />
-
-                {userGreeter}
-                {regionAccountAdder}
-                {regionalAccountList}
+                <div className='floatparent'>
+                    <div className='floatchild'>{userGreeter}</div>
+                
+                    <div className='floatchild'>{regionAccountAdder}</div>
+                </div>
+                <table className='regionalList'>
+                    <thead>
+                        <tr>
+                            <th width="30%">Name</th>
+                            <th width="20%">Region</th>
+                            <th width="40%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {regionalAccountList}
+                    </tbody>
+                </table>
         </div>
     )
 

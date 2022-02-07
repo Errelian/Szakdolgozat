@@ -61,17 +61,33 @@ html{
     box-shadow: 1px 1px 10px 1px #7a8492;
     border-radius: 5px;
   }
+  
+  .adderForm{
+    transform: translateY(0%) !important;
+    height:100%;
+
+  }
+  .greeting {
+    margin-top:auto;
+  }
 
   .standardButton{
     height: 30px;
     width: 100%;
     background-color: #a7b4c7;
     border: none;
+    margin-top: 10px;
   }
 
   .standardButton:hover {
     cursor: pointer;
     background-color: #96b0d8;
+}
+
+.delete_specific_account_button {
+  width: 200px;
+  margin-right: auto;
+  text-align: left;
 }
 
 .buttonLogin {
@@ -98,3 +114,20 @@ html{
     font-size: 17px;
     padding:15px;
 }
+
+
+.floatparent {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+.delete_account_form {
+  margin-top: auto;
+}
+
+.regionalList{
+    width: 100%;
+}
+
