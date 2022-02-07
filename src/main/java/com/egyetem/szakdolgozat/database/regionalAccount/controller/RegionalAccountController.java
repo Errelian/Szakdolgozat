@@ -74,13 +74,11 @@ public class RegionalAccountController {
     @DeleteMapping(value = "/api/regionalAccounts/delete", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount) {
         try {
-            SiteUser siteUser = siteUserRepository.findUserById(regionalAccount.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            if (!(authentication.getName().equals(siteUser.getUsername()))){
-                return new ResponseEntity<>("\"Error, that's not you.\"", HttpStatus.FORBIDDEN);
-            }
+            regionalAccount.setUserId(siteUser.getId());
 
             regionalAccountRepository.delete(regionalAccount);
             return new ResponseEntity<>("\"Entity deleted.\"", HttpStatus.OK);

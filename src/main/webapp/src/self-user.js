@@ -17,7 +17,8 @@ function SelfUser(){
         }).then(response =>{
             if(response.ok){
                 response.json().then(json =>{
-                    setInfo(json)
+                    console.log(json);
+                    setInfo(json);
                 })
             }
         })
@@ -109,7 +110,7 @@ function SelfUser(){
         </div>
         )
         
-    let regionAccountAdder = (
+    const regionAccountAdder = (
         <div className="loginForm">
             Please use this form to add additional regional accounts to your account.
           <form onSubmit={handleAdd} className='innerLoginForm'>
@@ -125,7 +126,61 @@ function SelfUser(){
             
             </form>
         </div>
-    )
+    ) 
+
+    function removeRegionalAcccount(name, regionId){
+
+        let jsonBody ={
+            "regionId": regionId,
+            "inGameName": name
+        }
+
+        fetch('http://localhost:8080/api/regionalAccounts/delete',{
+            method:'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(jsonBody),
+        }).then(response=>{
+            response.json().then( json=>{
+                toast(json, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    })
+
+                    if(response.ok && info !== 0){
+                        let updatedRegionalAccounts = [...info.regionalAccounts].filter(i => i.regionId !== regionId);
+                        let infoTemp = info;
+                        infoTemp.regionalAccounts = updatedRegionalAccounts;
+
+                        setInfo(infoTemp);
+                    }
+                }
+            )
+        })
+
+    }
+    let regionalAccountList = 0
+    if (info !== 0){
+        regionalAccountList = info.regionalAccounts.map(regionalAccount =>{
+            return  <tr key={regionalAccount.inGameName}>
+            <td style={{whiteSpace: 'nowrap'}}>{regionalAccount.inGameName}</td>
+            <td>{regionalAccount.regionId}</td>
+            <td>
+                <div classname='button-container'>
+                    <button className='standardButton' onClick={() => removeRegionalAcccount(regionalAccount.inGameName, regionalAccount.regionId)}>Delete</button>
+                </div>
+            </td>
+        </tr>
+        })
+    }
+        
 
     return(
         <div>
@@ -144,6 +199,7 @@ function SelfUser(){
 
                 {userGreeter}
                 {regionAccountAdder}
+                {regionalAccountList}
         </div>
     )
 
