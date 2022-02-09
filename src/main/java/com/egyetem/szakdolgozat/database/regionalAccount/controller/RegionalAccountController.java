@@ -40,9 +40,6 @@ public class RegionalAccountController {
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            System.out.println(authentication.getName());
-            System.out.println(siteUser.getUsername());
-
             Set<RegionalAccount> regionalAccounts = regionalAccountRepository.findByUserId(siteUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("\"User not found.\""));
 

@@ -45,7 +45,7 @@ function Login(){
      //console.log(errorMsg)
 
      function sendLogin(data){
-        fetch("http://localhost:8080/api/login-process",{
+        fetch("/api/login-process",{
             method: "POST",
             body: new URLSearchParams(data)
         })

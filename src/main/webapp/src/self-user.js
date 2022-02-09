@@ -11,7 +11,7 @@ function SelfUser(){
 
     useEffect(() => {
 
-        fetch('http://localhost:8080/api/users/self',{
+        fetch('/api/users/self',{
             method:'GET',
             headers: {
                 'Accept': 'application/json'
@@ -32,7 +32,7 @@ function SelfUser(){
         let jsonBody = {"password": input}
 
 
-        fetch('http://localhost:8080/api/users/delete',{
+        fetch('/api/users/delete',{
             method:'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -77,7 +77,7 @@ function SelfUser(){
             "inGameName":input[1]
         }
 
-        fetch('http://localhost:8080/api/regionalAccounts/update',{
+        fetch('/api/regionalAccounts/update',{
             method:'POST',
             headers: {
                 'Accept': 'application/json',
@@ -109,7 +109,7 @@ function SelfUser(){
             "inGameName": name
         }
 
-        fetch('http://localhost:8080/api/regionalAccounts/delete',{
+        fetch('/api/regionalAccounts/delete',{
             method:'DELETE',
             headers: {
                 'Accept': 'application/json',

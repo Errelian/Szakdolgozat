@@ -19,7 +19,7 @@ function Register(){
         
 
 
-        fetch('http://localhost:8080/api/users/register',{
+        fetch('/api/users/register',{
             method:'POST',
             headers: {
                 'Accept': 'application/json',
