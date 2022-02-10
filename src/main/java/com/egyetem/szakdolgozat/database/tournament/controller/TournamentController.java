@@ -268,15 +268,16 @@ public class TournamentController {
             if (siteUser.getId().equals(team.getCreatorId())) {
                 tournamentToTeams.setTeam(team);
                 tournamentToTeams.setTournament(tournament);
+                tournamentToTeams.setCurrentRound(1);
                 tournamentToTeamsRepository.save(tournamentToTeams);
                 return ResponseEntity.ok("\"Successfully saved.\"");
             }
 
             return new ResponseEntity<>("\"Forbidden: You are not the creator of the team.\"", HttpStatus.FORBIDDEN);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>("Resource not found: " + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("\"Resource not found: \"" + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>("Bad input: ", HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>("\"Bad input: \"", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
