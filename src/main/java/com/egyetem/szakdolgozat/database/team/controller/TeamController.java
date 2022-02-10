@@ -2,6 +2,8 @@ package com.egyetem.szakdolgozat.database.team.controller;
 
 import com.egyetem.szakdolgozat.database.team.persistance.Team;
 import com.egyetem.szakdolgozat.database.team.persistance.TeamRepository;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +21,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class TeamController {
 
     TeamRepository teamRepository;
     SiteUserRepository siteUserRepository;
+    TournamentToTeamsRepository tournamentToTeamsRepository;
 
     @Autowired
-    public TeamController(TeamRepository teamRepository, SiteUserRepository siteUserRepository) {
+    public TeamController(TeamRepository teamRepository, SiteUserRepository siteUserRepository,
+                          TournamentToTeamsRepository tournamentToTeamsRepository) {
         this.teamRepository = teamRepository;
         this.siteUserRepository = siteUserRepository;
+        this.tournamentToTeamsRepository = tournamentToTeamsRepository;
     }
 
     @PostMapping(value = "/api/teams/create", consumes = "application/json", produces = "application/json")
@@ -46,6 +53,11 @@ public class TeamController {
 
             if (!json.get("teamName").isBlank()) {
                 Team team = new Team(json.get("teamName"), siteUser.getId());
+
+                Set<SiteUser> teamMembers = new HashSet<>();
+                teamMembers.add(siteUser);
+
+                team.setTeamMembers(teamMembers);
 
                 teamRepository.save(team);
                 return new ResponseEntity<>("\"Successfully created new team.\"", HttpStatus.OK);
@@ -89,20 +101,20 @@ public class TeamController {
     public ResponseEntity<String> deleteTeam(@PathVariable Long teamId) {
         try {
 
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                SiteUser changer = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+            SiteUser changer = siteUserRepository.findSiteUserByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-                Team team = teamRepository.findTeamById(teamId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+            Team team = teamRepository.findTeamById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
 
 
-                if (team.getCreatorId().equals(changer.getId())) {
-                    teamRepository.delete(team);
-                    return new ResponseEntity<>("\"Successfully deleted team.\"", HttpStatus.OK);
-                }
-                return new ResponseEntity<>("\"You are not the creator of that team\"", HttpStatus.FORBIDDEN);
+            if (team.getCreatorId().equals(changer.getId())) {
+                teamRepository.delete(team);
+                return new ResponseEntity<>("\"Successfully deleted team.\"", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("\"You are not the creator of that team\"", HttpStatus.FORBIDDEN);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
@@ -184,6 +196,19 @@ public class TeamController {
 
             return new ResponseEntity<>(team, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/api/teams/tournaments/{id}", produces = "application/json")
+    public ResponseEntity<Object> getTeamTournaments(@PathVariable Long id) {
+        try {
+            Set<TournamentToTeams> tournaments = tournamentToTeamsRepository.findTournamentToTeamsByTeamId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
+
+
+            return new ResponseEntity<>(tournamentToTeamsRepository.findTournamentToTeamsByTeamId(id), HttpStatus.OK);
+        }catch(ResourceNotFoundException e){
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
     }
