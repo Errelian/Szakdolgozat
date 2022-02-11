@@ -203,6 +203,7 @@ function OneTeam(){
                     <button className='standardButton delete_specific_account_button' onClick={() => enterTournament(tournament.id)}>Navigate</button>
                 </div>
             </td>
+            <hr/>
             </tr>
             )
         })

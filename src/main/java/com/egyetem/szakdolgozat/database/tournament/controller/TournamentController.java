@@ -241,7 +241,7 @@ public class TournamentController {
 
     @PostMapping(value = "/api/tournament/add/team", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> addTeam(
-        @RequestBody Map<String, String> json) { //TODO ADD EXCEPTION HANDLING TO IT, CONSTRAINT MOST LIKELY
+        @RequestBody Map<String, String> json) {
 
         try {
             if (json.get("teamId").isBlank() || json.get("tournamentId").isBlank()) {
