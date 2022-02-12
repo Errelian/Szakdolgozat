@@ -37,14 +37,18 @@ public class SeedingController {
 
             ArrayList<ArrayList<TeamSkillDto>> matchups = Seeder.seedTournament(tournament);
 
-            int i = 0;
+            int i = 1;
             for (ArrayList<TeamSkillDto> teamSkillDtos : matchups) {
                 for (TeamSkillDto team : teamSkillDtos) {
-                    TournamentToTeams teamTable =
-                        tournamentToTeamsRepository.findTournamentToTeamsById(new TournamentToTeamsCKey(team.getId(), tournamentId)).get();
+                    System.out.println(team.getId());
+                    if(team.getId() != -1L) {
+                        TournamentToTeams teamTable =
+                            tournamentToTeamsRepository
+                                .findTournamentToTeamsById(new TournamentToTeamsCKey(team.getId(), tournamentId)).get();
 
-                    teamTable.setPosition(i);
-                    tournamentToTeamsRepository.save(teamTable);
+                        teamTable.setPosition(i);
+                        tournamentToTeamsRepository.save(teamTable);
+                    }
                     i++;
                 }
             }

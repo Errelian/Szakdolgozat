@@ -16,6 +16,7 @@ function OneTeam(){
     
 
     useEffect(() => {
+        console.log('/api/teams/tournaments/' + id);
         fetch('/api/teams/tournaments/' + id,{
             method:'GET',
             headers: {
@@ -30,12 +31,32 @@ function OneTeam(){
                         tempTournament.push(element.tournament)
                     })
 
-                   if ( !(_.isEqual(tournaments.current, tempTournament)) || !(_.isEqual(json[0].team, teamData.current))){
-                        tournaments.current = tempTournament;
-                        console.log(tournaments.current);
-                        teamData.current = json[0].team;
-                        setRerender(!rerender);
-                   }
+                    if (tempTournament.length !== 0){
+
+                        if ( !(_.isEqual(tournaments.current, tempTournament)) || !(_.isEqual(json[0].team, teamData.current))){
+                            tournaments.current = tempTournament;
+                            console.log(tournaments.current);
+                            teamData.current = json[0].team;
+                            setRerender(!rerender);
+                        }
+                    }
+                    else{
+                        fetch('/api/teams/' +id, {
+                            method:'GET',
+                            headers: {
+                            'Accept': 'application/json'
+                            },
+                        }).then(response =>{
+                            if(response.ok){
+                                response.json().then(json=>{
+                                    if ( !_.isEqual(json, teamData.current)){
+                                        teamData.current = json;
+                                        setRerender(!rerender);
+                                    }
+                                })
+                            }
+                        })
+                    }
                 })
             }
         })

@@ -221,7 +221,29 @@ public class TournamentController {
             Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
-            return new ResponseEntity<>(tournament.getTeams(), HttpStatus.OK);
+            List<TournamentToTeams> teamList = tournament.getTeams();
+
+            List<TournamentToTeams> firstRound = new ArrayList<>();
+
+            int rounds = (int) Math.ceil(Math.log(teamList.size()) / Math.log(2));
+            int maxTeams = (int) Math.pow(2, rounds);
+
+            System.out.println(maxTeams);
+
+            for (int i = 1; i <= maxTeams; i++){
+                boolean match = false;
+                for (TournamentToTeams team : teamList){
+                    if (team.getPosition() == i){
+                        match = true;
+                        firstRound.add(team);
+                    }
+                }
+                if(!match){
+                    firstRound.add(new TournamentToTeams(i, -1, 1));
+                }
+            }
+
+            return new ResponseEntity<>(firstRound, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }

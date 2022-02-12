@@ -62,7 +62,6 @@ function SelfTeams(){
                     toastMessage.current = json;
                     setTeams(updatedTeams);
             }})
-
         })
     }
 
