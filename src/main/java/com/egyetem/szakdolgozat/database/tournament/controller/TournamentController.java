@@ -10,6 +10,7 @@ import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepo
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import com.egyetem.szakdolgozat.notify.Notifier;
+import com.egyetem.szakdolgozat.util.RoundCalculator;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -228,7 +231,7 @@ public class TournamentController {
             int rounds = (int) Math.ceil(Math.log(teamList.size()) / Math.log(2));
             int maxTeams = (int) Math.pow(2, rounds);
 
-            System.out.println(maxTeams);
+            //System.out.println(maxTeams);
 
             for (int i = 1; i <= maxTeams; i++){
                 boolean match = false;
@@ -243,7 +246,23 @@ public class TournamentController {
                 }
             }
 
-            return new ResponseEntity<>(firstRound, HttpStatus.OK);
+            firstRound.sort(Comparator.comparing(TournamentToTeams::getPosition));
+
+            List<List<TournamentToTeams>> currentTourneyStanding = new ArrayList<>();
+
+
+            for (int i = 0; i <= (int) (Math.log(firstRound.size())/Math.log(2)); i++){
+                if (i == 0){
+                    currentTourneyStanding.add(firstRound);
+                }
+                else{
+                    currentTourneyStanding.add(RoundCalculator.calcNextRound(currentTourneyStanding.get(currentTourneyStanding.size()-1), i+1));
+                }
+            }
+            //System.out.println(firstRound);
+            //System.out.println(currentTourneyStanding);
+
+            return new ResponseEntity<>(currentTourneyStanding, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
