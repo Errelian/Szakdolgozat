@@ -9,6 +9,7 @@ import OneTeam from './one-team';
 import AllTeams from './all-teams';
 import CreateTournament from './create-tournament';
 import AllTournaments from './all-tournaments';
+import OneTournament from './one-tournament';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,6 +30,7 @@ function App() {
                 <Route path='/teams' element={<AllTeams/>}/>
                 <Route path='/create-tournament' element={<CreateTournament/>}/>
                 <Route path='/all-tournaments' element ={<AllTournaments/>}/>
+                <Route path='/one-tournament/:id' element={<OneTournament/>}/>
               </Routes>
         </BrowserRouter>
     );

@@ -144,7 +144,7 @@ public class TournamentController {
             SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-            Tournament tournament = tournamentRepository.findByTournamentName(json.get("tournamentName"))
+            Tournament tournament = tournamentRepository.findById(Long.parseLong(json.get("tournamentId")))
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
 
@@ -217,16 +217,18 @@ public class TournamentController {
         return new ResponseEntity<>(tournamentRepository.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")
+    @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json") //TODO HANDLE TOURNAMENTS OF SIZE 1
     public ResponseEntity<Object> getTeams(@PathVariable Long tournamentId) {
         try {
             Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
 
+            if (tournament.getTeams().size() <= 1){
+                return new ResponseEntity<>(tournament.getTeams(), HttpStatus.OK);
+            }
+
             List<TournamentToTeams> teamList = tournament.getTeams();
-
             List<TournamentToTeams> firstRound = new ArrayList<>();
-
             int rounds = (int) Math.ceil(Math.log(teamList.size()) / Math.log(2));
             int maxTeams = (int) Math.pow(2, rounds);
 
@@ -362,7 +364,7 @@ public class TournamentController {
     }
 
     //Position can only be modified by the backend, so this is only for elimination
-    @PutMapping(value = "api/tournament/modify/team", consumes = "application/json", produces = "application/json")
+    @PutMapping(value = "/api/tournament/modify/team", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> eliminateTeam(@RequestBody Map<String, Long> json) {
 
         try {
@@ -383,7 +385,7 @@ public class TournamentController {
                     tournamentToTeams.setCurrentRound(tournamentToTeams.getCurrentRound()+1);
                     tournamentToTeamsRepository.save(tournamentToTeams);
 
-                    return new ResponseEntity<>("\"Successfully modified.\"", HttpStatus.OK);
+                    return new ResponseEntity<>("\"Successfully eliminated team.\"", HttpStatus.OK);
                 }
                 return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
             } else {

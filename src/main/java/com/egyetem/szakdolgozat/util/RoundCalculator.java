@@ -13,7 +13,9 @@ public class RoundCalculator {
 
         previousRound.sort(Comparator.comparing(TournamentToTeams::getPosition));
         //System.out.println(previousRound);
-
+        if (previousRound.size() == 1){
+            return new ArrayList<>();
+        }
         for (int i=1; i <= previousRound.size(); i++){
             //System.out.println(previousRound.get(i).getPosition());
             if(previousRound.get(i-1).getEliminationRound() == null || previousRound.get(i-1).getEliminationRound() > roundNumber){
