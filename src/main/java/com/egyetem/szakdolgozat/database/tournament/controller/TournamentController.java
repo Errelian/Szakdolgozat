@@ -4,14 +4,13 @@ import com.egyetem.szakdolgozat.database.team.persistance.Team;
 import com.egyetem.szakdolgozat.database.team.persistance.TeamRepository;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
+import com.egyetem.szakdolgozat.database.tournament.service.TournamentService;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
-import com.egyetem.szakdolgozat.notify.Notifier;
 import com.egyetem.szakdolgozat.util.RoundCalculator;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -37,23 +36,26 @@ import java.util.Map;
 @RestController
 public class TournamentController {
 
-    private TournamentRepository tournamentRepository;
-    private TournamentToTeamsRepository tournamentToTeamsRepository;
-    private TeamRepository teamRepository;
-    private SiteUserRepository siteUserRepository;
-    private TaskExecutor executor;
+    private final TournamentRepository tournamentRepository;
+    private final TournamentToTeamsRepository tournamentToTeamsRepository;
+    private final TeamRepository teamRepository;
+    private final SiteUserRepository siteUserRepository;
+    private final TaskExecutor executor;
+    private final TournamentService tournamentService;
 
     @Autowired
     public TournamentController(TournamentRepository tournamentRepository,
                                 TournamentToTeamsRepository tournamentToTeamsRepository,
                                 TeamRepository teamRepository,
                                 @Qualifier("taskExecutor") TaskExecutor taskExecutor,
-                                SiteUserRepository siteUserRepository) {
+                                SiteUserRepository siteUserRepository,
+                                TournamentService tournamentService) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentToTeamsRepository = tournamentToTeamsRepository;
         this.teamRepository = teamRepository;
         this.executor = taskExecutor;
         this.siteUserRepository = siteUserRepository;
+        this.tournamentService = tournamentService;
     }
 
     @PostMapping(value = "/api/tournament/create", consumes = "application/json", produces = "application/json")
@@ -156,25 +158,7 @@ public class TournamentController {
                 return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
             }
 
-
-
-            List<Team> teams = new ArrayList<>();
-            for (TournamentToTeams tournamentToTeams : tournament.getTeams()) {
-                teams.add(tournamentToTeams.getTeam());
-            }
-            for (Team team : teams) {
-                for (SiteUser user : team.getTeamMembers()){
-                    user.geteMail();
-                }
-            }
-
-            executor.execute(() -> {
-                try {
-                    Notifier.notifyUsers(tournament);
-                } catch (UnirestException e) {
-                    e.printStackTrace();
-                }
-            });
+            tournamentService.emailSenderService(tournament);
 
             return new ResponseEntity<>("\"Saved victor change.\"", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
@@ -227,43 +211,7 @@ public class TournamentController {
                 return new ResponseEntity<>(tournament.getTeams(), HttpStatus.OK);
             }
 
-            List<TournamentToTeams> teamList = tournament.getTeams();
-            List<TournamentToTeams> firstRound = new ArrayList<>();
-            int rounds = (int) Math.ceil(Math.log(teamList.size()) / Math.log(2));
-            int maxTeams = (int) Math.pow(2, rounds);
-
-            //System.out.println(maxTeams);
-
-            for (int i = 1; i <= maxTeams; i++){
-                boolean match = false;
-                for (TournamentToTeams team : teamList){
-                    if (team.getPosition() == i){
-                        match = true;
-                        firstRound.add(team);
-                    }
-                }
-                if(!match){
-                    firstRound.add(new TournamentToTeams(i, -1, 1));
-                }
-            }
-
-            firstRound.sort(Comparator.comparing(TournamentToTeams::getPosition));
-
-            List<List<TournamentToTeams>> currentTourneyStanding = new ArrayList<>();
-
-
-            for (int i = 0; i <= (int) (Math.log(firstRound.size())/Math.log(2)); i++){
-                if (i == 0){
-                    currentTourneyStanding.add(firstRound);
-                }
-                else{
-                    currentTourneyStanding.add(RoundCalculator.calcNextRound(currentTourneyStanding.get(currentTourneyStanding.size()-1), i+1));
-                }
-            }
-            //System.out.println(firstRound);
-            //System.out.println(currentTourneyStanding);
-
-            return new ResponseEntity<>(currentTourneyStanding, HttpStatus.OK);
+            return new ResponseEntity<>(tournamentService.currentStandingCalculatorService(tournament), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
