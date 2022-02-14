@@ -13,7 +13,7 @@ function NavHeader(){
                 <Navbar.Brand href="/self-teams">Your teams</Navbar.Brand>
                 <Navbar.Brand href="/teams">All teams</Navbar.Brand>
                 <Navbar.Brand href="/create-tournament">Create a tournament</Navbar.Brand>
-                <Navbar.Brand href="/tournaments">All tournaments</Navbar.Brand>
+                <Navbar.Brand href="/all-tournaments">All tournaments</Navbar.Brand>
             </Container>
         </Navbar>
         </div>

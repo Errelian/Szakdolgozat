@@ -1,6 +1,5 @@
 package com.egyetem.szakdolgozat.database.tournamentToTeams;
 
-import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

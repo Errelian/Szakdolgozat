@@ -2,7 +2,6 @@ package com.egyetem.szakdolgozat.database.regionalAccount.controller;
 
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
-import com.egyetem.szakdolgozat.database.user.controller.SiteUserController;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

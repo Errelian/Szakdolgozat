@@ -6,9 +6,7 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,8 @@ public class RankingService {
     private static final String RIOT_TOKEN = System.getenv("RIOT_TOKEN");
 
     private static final int ONE_SECOND = 1010;
-    private static final int TWO_MINUTES = 120100; //in milliseconds, a little extra to make sure we are not getting rate limited
+    private static final int TWO_MINUTES = 120100;
+        //in milliseconds, a little extra to make sure we are not getting rate limited
 
     private static int REQUEST_COUNTER = 0;
 
@@ -45,7 +44,7 @@ public class RankingService {
 
 
     @Async
-    public void updateRank(Tournament tournament){
+    public void updateRank(Tournament tournament) {
 
         tournament.setUpdating(true);
         tournamentRepository.save(tournament);
@@ -67,8 +66,8 @@ public class RankingService {
         }
 
 
-
-        List<List<RegionalAccount>> partitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+        List<List<RegionalAccount>> partitions =
+            new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
         for (int i = 0; i < accounts.size(); i += 20) {
             partitions.add(accounts.subList(i, Math.min(i + 20, accounts.size())));
         }
@@ -123,26 +122,25 @@ public class RankingService {
             }
 
 
-        System.out.println(rankings);
-        if (rankings != null) {
-            for (List<RankDeserializer> ranks : rankings) {
-                short highest = 0;
-                for (RankDeserializer rank : ranks) {
-                    if (highest < RankEnum.valueOf(rank.getTier()).getValue()) {
-                        highest = RankEnum.valueOf(rank.getTier()).getValue();
+            System.out.println(rankings);
+            if (rankings != null) {
+                for (List<RankDeserializer> ranks : rankings) {
+                    short highest = 0;
+                    for (RankDeserializer rank : ranks) {
+                        if (highest < RankEnum.valueOf(rank.getTier()).getValue()) {
+                            highest = RankEnum.valueOf(rank.getTier()).getValue();
+                        }
                     }
+                    RegionalAccount regionalAccount =
+                        regionalAccountRepository.findByInGameName(ranks.get(0).getSummonerName()).get();
+
+                    regionalAccount.setRank(highest);
+
+                    regionalAccountRepository.save(regionalAccount);
                 }
-                RegionalAccount regionalAccount =
-                    regionalAccountRepository.findByInGameName(ranks.get(0).getSummonerName())
-                        .get();
-
-                regionalAccount.setRank(highest);
-
-                regionalAccountRepository.save(regionalAccount);
             }
-        }
 
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("LOG: INTERRUPTED");
         }
         tournament.setUpdating(false);
