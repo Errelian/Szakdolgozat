@@ -2,6 +2,7 @@ import NavHeader from './navHeader';
 import React, {useState, useEffect, useRef} from 'react';
 import { useNavigate, useParams} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import testArray from './tester';
 
 
 function OneTournament(){
@@ -23,7 +24,7 @@ function OneTournament(){
             if (response.ok){
                 response.json().then(json =>{
                     currentStanding.current = json;
-                    console.log(currentStanding.current);
+                    //console.log(currentStanding.current);
                 })
             }
         })
@@ -36,11 +37,27 @@ function OneTournament(){
             if(response.ok){
                 response.json().then(json =>{
                     currentTournament.current = json;
+                    //console.log(currentTournament.current);
                 })
             }
         })
 
     })
+
+
+    currentTournament.current = {
+          "id": 44,
+          "tournamentName": "algoTestTournament",
+          "startTime": "2022-02-23 00:00",
+          "victorId": null,
+          "regionId": "EUN",
+          "creatorId": 20,
+          "updating": false
+    };
+    console.log(currentTournament.current);
+
+    currentStanding.current = testArray();
+    console.log(currentStanding.current);
 
     if (toastMessage.current !== 0){
         toast(toastMessage.current, {
@@ -53,7 +70,7 @@ function OneTournament(){
             progress: undefined,
             });
         toastMessage.current = 0;
-    }
+    };
 
     function eliminateTeam(teamId, eliminationRound){
 
@@ -100,7 +117,72 @@ function OneTournament(){
         })
     }
 
-    return (<div>hihi haha</div>)
+    function deleteTournament(){
+        let jsonBody ={
+            "tournamentId": id
+        }
+
+        fetch('/api/tournament/delete',{
+            method:'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonBody),
+        })
+    }
+
+    function seedTournament(){
+        fetch('/api/seeding/'+ id,{
+            method:'PUT',
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+    }
+
+    function updateRanking(){
+        fetch('/api/update/rankings'+ id,{
+            method:'PUT',
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+    }
+
+    let tournamentInfo = 0;
+    if (currentTournament.current !== 0){
+        tournamentInfo =(
+        <div className='userInfo loginForm adderForm'>
+            <p className='greeting'>TournamentID: {currentTournament.current.id}</p>
+            <p className='id'>TournamentName: {currentTournament.current.tournamentName}</p>
+            <p className='id'>CreatorID: {currentTournament.current.creatorId}</p>
+            <p className='id'>StartTime: {currentTournament.current.startTime}</p>
+            <p className='id'>RegionID: {currentTournament.current.regionId}</p>
+        </div>
+        )
+    }
+
+    let tournamentMenu = (
+        <div className = 'loginForm adderForm'>
+            <button className='standardButton' onClick={() => deleteTournament()}>Delete</button>
+            <button className='standardButton' onClick={() => seedTournament()}>Seed</button>
+            <button className='standardButton' onClick={() => updateRanking()}>Update Ranks</button>
+        </div>
+    )
+
+    return (
+    <div>
+        <NavHeader/>
+        <ToastContainer/>
+        <div className='floatparent'>
+            <div className='floatchild'>{tournamentInfo}</div>
+                
+            <div className='floatchild'>{tournamentMenu}</div>
+        </div>
+        
+    </div>
+    )
 
 }
 
