@@ -81,7 +81,7 @@ public class TournamentServiceImpl implements TournamentService{
             }
             else{
                 currentTourneyStanding.add(
-                    RoundCalculator.calcNextRound(currentTourneyStanding.get(currentTourneyStanding.size()-1), i+1));
+                    RoundCalculator.calcNextRound2(currentTourneyStanding.get(currentTourneyStanding.size()-1), i+1));
             }
         }
 

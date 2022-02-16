@@ -13,8 +13,8 @@
   }
 }
 
-html{
-    background-color: #FFF;
+html {
+  background-color: #fff;
 }
 
 .App-header {
@@ -42,46 +42,45 @@ html{
 }
 
 .heading {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .loginForm {
-    margin: 0 auto;
-    padding: 20px;
+  margin: 0 auto;
+  padding: 20px;
 
-    width: 300px;
-    transform: translateY(50%);
+  width: 300px;
+  transform: translateY(50%);
 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-        "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
 
-    background-color: #b8c6db;
-    background-image: linear-gradient(315deg, #b8c6db 0%, #dee5e7 74%);
+  background-color: #b8c6db;
+  background-image: linear-gradient(315deg, #b8c6db 0%, #dee5e7 74%);
 
-    box-shadow: 1px 1px 10px 1px #7a8492;
-    border-radius: 5px;
-  }
-  
-  .adderForm{
-    transform: translateY(0%) !important;
-    height:100%;
+  box-shadow: 1px 1px 10px 1px #7a8492;
+  border-radius: 5px;
+}
 
-  }
-  .greeting {
-    margin-top:auto;
-  }
+.adderForm {
+  transform: translateY(0%) !important;
+  height: 100%;
+}
+.greeting {
+  margin-top: auto;
+}
 
-  .standardButton{
-    height: 30px;
-    width: 100%;
-    background-color: #a7b4c7;
-    border: none;
-    margin-top: 10px;
-  }
+.standardButton {
+  height: 30px;
+  width: 100%;
+  background-color: #a7b4c7;
+  border: none;
+  margin-top: 10px;
+}
 
-  .standardButton:hover {
-    cursor: pointer;
-    background-color: #96b0d8;
+.standardButton:hover {
+  cursor: pointer;
+  background-color: #96b0d8;
 }
 
 .delete_specific_account_button {
@@ -91,57 +90,106 @@ html{
 }
 
 .buttonLogin {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 .buttonRegister {
-    margin-left: 5px;
+  margin-left: 5px;
 }
 
 .button-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
-.innerLoginForm{
-    display: flex;
-    flex-direction: column;
+.innerLoginForm {
+  display: flex;
+  flex-direction: column;
 }
 
-.header{
-    text-align: center;
-    background: #a7b4c7;
-    font-size: 17px;
-    padding:15px;
+.header {
+  text-align: center;
+  background: #a7b4c7;
+  font-size: 17px;
+  padding: 15px;
 }
-
 
 .floatparent {
-    display:flex;
-    flex-direction: row;
-    justify-content: space-around;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .delete_account_form {
   margin-top: auto;
 }
 
-.regionalList{
-    width: 100%;
-    margin-left:17%;    
+.regionalList {
+  width: 100%;
+  margin-left: 17%;
 }
 
-.tournamentList{
-    width: 100%;   
+.tournamentList {
+  width: 100%;
 }
 
 hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
 }
 
+/* STANDINGS STYLING */
+.standings_wrapper {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(auto-fill, 250px);
+  gap: 25px;
+  padding: 10px 50px 10px 50px;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  grid-row: 1;
+}
+
+.team_wrapper {
+  background: rgb(184, 198, 219);
+
+  width: 100%;
+  border-radius: 2.5px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2.5px;
+  margin-bottom: 5px;
+
+  padding: 2.5px 5px 5px 5px;
+}
+.team_wrapper:nth-child(even) {
+  margin-bottom: 20px;
+  background-color: #b8c6db;
+  background-image: linear-gradient(315deg, #b8c6db 74%, #dee5e7 0%);
+}
+.team_wrapper:nth-child(odd) {
+  background-color: #b8c6db;
+  background-image: linear-gradient(315deg, #dbb8b8 74%, #dee5e7 0%);
+}
+
+.team_id {
+  text-align: right;
+  padding-right: 5px;
+}
+
+.team_name {
+  font-size: large;
+  font-weight: 600;
+  text-transform: capitalize;
+}
