@@ -12,13 +12,12 @@ public class RoundCalculator {
         List<TournamentToTeams> nextRound = new ArrayList<>();
 
         previousRound.sort(Comparator.comparing(TournamentToTeams::getPosition));
-        //System.out.println(previousRound);
         if (previousRound.size() == 1){
             return new ArrayList<>();
         }
 
         for (int i=0; i < previousRound.size()-1; i= i+2){
-            if (previousRound.get(i).getEliminationRound() == null || (previousRound.get(i).getEliminationRound() > roundNumber)){ //if the current team is not yet eliminated
+            if (previousRound.get(i).getEliminationRound() == null || (previousRound.get(i).getEliminationRound() >= roundNumber)){ //if the current team is not yet eliminated
                 if (previousRound.get(i+1).getEliminationRound() != null && previousRound.get(i+1).getEliminationRound() <= roundNumber){
                     nextRound.add(previousRound.get(i));
                 }
