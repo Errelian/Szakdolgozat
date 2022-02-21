@@ -62,6 +62,14 @@ public class TournamentToTeams {
         this.currentRound = currentRound;
     }
 
+    public TournamentToTeams(Integer position, Integer eliminationRound, Integer currentRound, Team team) {
+        this.position = position;
+        this.eliminationRound = eliminationRound;
+        this.currentRound = currentRound;
+        this.team = team;
+    }
+
+
     public TournamentToTeams(TournamentToTeamsCKey id, Integer position, Integer eliminationRound,
                              Integer currentRound) {
         this.id = id;

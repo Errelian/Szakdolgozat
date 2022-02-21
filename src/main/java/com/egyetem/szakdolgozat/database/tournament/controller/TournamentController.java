@@ -329,7 +329,7 @@ public class TournamentController {
 
 
                 if(siteUser.getId().equals(tournament.getCreatorId())) {
-                    tournamentToTeams.setEliminationRound(tournamentToTeams.getCurrentRound());
+                    tournamentToTeams.setEliminationRound(Math.toIntExact(json.get("eliminationRound")));
                     tournamentToTeams.setCurrentRound(tournamentToTeams.getCurrentRound()+1);
                     tournamentToTeamsRepository.save(tournamentToTeams);
 

@@ -3,6 +3,7 @@ package com.egyetem.szakdolgozat.database.tournament.service;
 import com.egyetem.szakdolgozat.database.team.persistance.Team;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.notify.Notifier;
 import com.egyetem.szakdolgozat.util.RoundCalculator;
@@ -66,7 +67,7 @@ public class TournamentServiceImpl implements TournamentService{
                 }
             }
             if(!match){
-                firstRound.add(new TournamentToTeams(i, -1, 1));
+                firstRound.add(new TournamentToTeams(i, -1, 1, new Team(-1L, "Fake team")));
             }
         }
 

@@ -27,8 +27,6 @@ public class SiteUserController {
     SiteUserRepository siteUserRepository;
     PasswordEncoder passwordEncoder;
 
-
-
     @Autowired
     public SiteUserController(SiteUserRepository siteUserRepository, PasswordEncoder passwordEncoder) {
         this.siteUserRepository = siteUserRepository;

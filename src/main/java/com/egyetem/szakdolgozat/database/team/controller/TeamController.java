@@ -126,7 +126,7 @@ public class TeamController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             SiteUser user = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found.")); //TODO
+                .orElseThrow(() -> new ResourceNotFoundException("User not found.")); 
             Team team = teamRepository.findTeamById(Long.parseLong(json.get("teamId")))
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found."));
 

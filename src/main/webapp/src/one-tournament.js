@@ -136,7 +136,7 @@ function OneTournament() {
     }
 
     function updateRanking() {
-        fetch('/api/update/rankings' + id, {
+        fetch('/api/update/rankings/' + id, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -183,17 +183,19 @@ function OneTournament() {
 
             col_content = stand_arr[arrayIndex];
             output = col_content.map(team => {
-                let name = team.team.teamName;
-                let id = team.team.id;
-
-                return (
-                    <div className="team_wrapper" key={id}>
-                        <div className='team_name'>{name}</div>
-                        <div className='team_id'>{id}</div>
-                        <button onClick={() => eliminateTeam(id, round)}>Declare Loss</button>
-                        <button onClick={() => declareVictor(id.id)}>Declare Win</button>
-                    </div>
-                )
+                if (team.team !== null){
+                    let name = team.team.teamName;
+                    let id = team.team.id;
+                    
+                    return (
+                        <div className="team_wrapper" key={id}>
+                            <div className='team_name'>{name}</div>
+                            <div className='team_id'>{id}</div>
+                            <button onClick={() => eliminateTeam(id, round)}>Declare Loss</button>
+                            <button onClick={() => declareVictor(id.id)}>Declare Win</button>
+                        </div>
+                    )
+                }
             })
         }
         return output;
