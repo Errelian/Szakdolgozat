@@ -2,14 +2,12 @@ package com.egyetem.szakdolgozat.database.user.controller;
 
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRegisterer;
-import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
+import com.egyetem.szakdolgozat.database.user.service.SiteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,20 +22,17 @@ import java.util.Map;
 @RestController
 public class SiteUserController {
 
-    SiteUserRepository siteUserRepository;
-    PasswordEncoder passwordEncoder;
+    SiteUserService siteUserService;
 
     @Autowired
-    public SiteUserController(SiteUserRepository siteUserRepository, PasswordEncoder passwordEncoder) {
-        this.siteUserRepository = siteUserRepository;
-        this.passwordEncoder = passwordEncoder;
+    public SiteUserController(SiteUserService siteUserService, PasswordEncoder passwordEncoder) {
+        this.siteUserService = siteUserService;
     }
 
     @GetMapping(value = "/api/users/{userId}", produces = "application/json")
     public ResponseEntity<Object> getSiteUserInfo(@PathVariable Long userId) {
         try {
-            SiteUser siteUser = siteUserRepository.findUserById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found"));
-
+            SiteUser siteUser = siteUserService.getArbitraryUser(userId);
             return new ResponseEntity<>(siteUser, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage()+"\"", HttpStatus.NOT_FOUND);
@@ -47,9 +42,7 @@ public class SiteUserController {
     @GetMapping(value = "/api/users/self", produces = "application/json")
     public ResponseEntity<Object> getSelfInfo() {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+            SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
 
             return new ResponseEntity<>(siteUser, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
@@ -60,8 +53,7 @@ public class SiteUserController {
     @GetMapping(value = "/api/users/{userId}/accounts", produces = "application/json")
     public ResponseEntity<Object> getUsersAccounts(@PathVariable Long userId) {
         try {
-            SiteUser siteUser = siteUserRepository.findUserById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            SiteUser siteUser = siteUserService.getArbitraryUser(userId);
             return new ResponseEntity<>(siteUser.getRegionalAccounts(), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
@@ -71,8 +63,7 @@ public class SiteUserController {
     @GetMapping(value = "/api/users/{userId}/teams", produces = "application/json")
     public ResponseEntity<Object> getUserTeams(@PathVariable Long userId) {
         try {
-            SiteUser siteUser = siteUserRepository.findUserById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            SiteUser siteUser = siteUserService.getArbitraryUser(userId);
             return new ResponseEntity<>(siteUser.getUserTeams(), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error" + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
@@ -83,10 +74,7 @@ public class SiteUserController {
     public ResponseEntity<Object> getSelfTeams() {
         try {
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
+            SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
             return new ResponseEntity<>(siteUser.getUserTeams(), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error" + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
@@ -100,13 +88,8 @@ public class SiteUserController {
                 return new ResponseEntity<>("\"No field can be left blank.\"", HttpStatus.BAD_REQUEST);
             }
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
-            siteUser.setUsername(json.get("newName"));
-
-            siteUserRepository.save(siteUser);
+            SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
+            siteUserService.modifyNameAndSave(siteUser, json.get("newName"));
 
             return new ResponseEntity<>("\"Username succesfully changed.\"", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
@@ -120,13 +103,7 @@ public class SiteUserController {
     public ResponseEntity<Object> registerUser(@RequestBody SiteUserRegisterer registerUser) {
 
         try {
-            if (!(registerUser.getUsername().isBlank() || registerUser.getPassword().isBlank() ||
-                registerUser.geteMail().isBlank())) {
-
-                SiteUser user = new SiteUser(registerUser.getUsername(), passwordEncoder.encode(registerUser.getPassword()),
-                    registerUser.geteMail());
-
-                siteUserRepository.save(user);
+            if(siteUserService.registerUser(registerUser)){
                 return new ResponseEntity<>("\"Successful registration.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Error, username, password, or email cannot be empty.\"", HttpStatus.BAD_REQUEST);
@@ -137,16 +114,10 @@ public class SiteUserController {
 
     @PutMapping(value = "/api/users/password", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> changePassword(@RequestBody Map<String, String> json) {
-
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
-            if (passwordEncoder.matches(json.get("oldPassword"), siteUser.getPassword()))
+            SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
+            if (siteUserService.changePassword(siteUser, json.get("oldPassword"), json.get("newPassword")))
             {
-                siteUser.setPassword(passwordEncoder.encode(json.get("newPassword")));
-                siteUserRepository.save(siteUser);
                 return new ResponseEntity<>("\"Successfully changed password.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Error, mismatching passwords.\"", HttpStatus.BAD_REQUEST);
@@ -160,13 +131,9 @@ public class SiteUserController {
     public ResponseEntity<Object> deleteAccount(@RequestBody Map<String, String> json) {
 
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            SiteUser siteUser = siteUserRepository.findSiteUserByUsername(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+            SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
 
-            if (passwordEncoder.matches(json.get("password"), siteUser.getPassword())){
-                siteUserRepository.delete(siteUser);
-                SecurityContextHolder.getContext().setAuthentication(null);
+            if (siteUserService.deleteAccount(siteUser, json.get("password"))){
                 return new ResponseEntity<>("\"User deleted.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Password is wrong.\"", HttpStatus.BAD_REQUEST);

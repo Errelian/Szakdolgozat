@@ -3,3 +3,10 @@
 [2] https://www.postgresql.org/docs/10/tutorial-inheritance.html
 
 [3] https://techcommunity.microsoft.com/t5/azure-database-for-postgresql/architecting-petabyte-scale-analytics-by-scaling-out-postgres-on/ba-p/969685
+
+[4] https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm, Architectural Styles and
+the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, Chapter 5
+
+[5] https://datatracker.ietf.org/doc/html/rfc2616
+
+[6] https://commitfest.postgresql.org/17/1252/ last accessed: 2022-02-27 20:53

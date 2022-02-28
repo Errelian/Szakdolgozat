@@ -64,9 +64,7 @@ public class TournamentController {
         try {
             if (tournament.getTournamentName().isBlank() ||
                 tournament.getRegionId().isBlank() || tournament.getStartTime().toString().isBlank()) {
-                return new ResponseEntity<>(
-                    "\"Error, no field can be empty, null, or compromised of only whitespaces.\"",
-                    HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("\"Error, no field can be empty, null, or compromised of only whitespaces.\"", HttpStatus.BAD_REQUEST);
             }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
