@@ -2,13 +2,14 @@ package com.egyetem.szakdolgozat.database.regionalAccount.service;
 
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
-import org.springframework.http.ResponseEntity;
+
+import java.util.Set;
 
 public interface RegionalAccountService {
 
-    ResponseEntity<Object> getRegionalAccountsFromId(Long id);
+    Set<RegionalAccount> getRegionalAccountsFromId(Long id);
 
-    ResponseEntity<Object> validateAndSave(RegionalAccount regionalAccount, SiteUser siteUser);
+    boolean validateAndSave(RegionalAccount regionalAccount, SiteUser siteUser);
 
-    ResponseEntity<Object> deleteAndValidate(RegionalAccount regionalAccount, SiteUser siteUser);
+    void deleteAndValidate(RegionalAccount regionalAccount, SiteUser siteUser);
 }

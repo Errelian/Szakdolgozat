@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 
 @RestController
 public class RegionalAccountController {
@@ -31,8 +33,9 @@ public class RegionalAccountController {
     public ResponseEntity<Object> getAll() {
         try {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
+            Set<RegionalAccount> regionalAccounts = regionalAccountService.getRegionalAccountsFromId(siteUser.getId());
 
-            return regionalAccountService.getRegionalAccountsFromId(siteUser.getId());
+            return new ResponseEntity<>(regionalAccounts, HttpStatus.OK);
         }catch (ResourceNotFoundException e){
             return new ResponseEntity<>("\"Error: " +e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
@@ -43,7 +46,10 @@ public class RegionalAccountController {
         try {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
 
-            return regionalAccountService.validateAndSave(regionalAccount, siteUser);
+            if (regionalAccountService.validateAndSave(regionalAccount, siteUser)){
+                return new ResponseEntity<>("\"Change saved.\"", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("\"Error, change not saved. No field can be blank.\"", HttpStatus.BAD_REQUEST);
         }catch (ResourceNotFoundException e){
             return new ResponseEntity<>("\"Error: " +e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         }
@@ -53,8 +59,9 @@ public class RegionalAccountController {
     public ResponseEntity<Object> deleteRegionalAccount(@RequestBody RegionalAccount regionalAccount) {
         try {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
+            regionalAccountService.deleteAndValidate(regionalAccount, siteUser);
 
-            return regionalAccountService.deleteAndValidate(regionalAccount, siteUser);
+            return new ResponseEntity<>("\"Entity deleted.\"", HttpStatus.OK);
         } catch (ResourceNotFoundException e){
             return new ResponseEntity<>("\"Error: " +e.getMessage() + "\"", HttpStatus.NOT_FOUND);
 
