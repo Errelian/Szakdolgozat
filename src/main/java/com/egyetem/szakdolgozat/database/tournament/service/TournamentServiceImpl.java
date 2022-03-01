@@ -2,8 +2,8 @@ package com.egyetem.szakdolgozat.database.tournament.service;
 
 import com.egyetem.szakdolgozat.database.team.persistance.Team;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
+import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
-import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.notify.Notifier;
 import com.egyetem.szakdolgozat.util.RoundCalculator;
@@ -11,6 +11,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,10 +22,12 @@ import java.util.List;
 public class TournamentServiceImpl implements TournamentService{
 
     private final TaskExecutor executor;
+    private final TournamentRepository tournamentRepository;
 
     @Autowired
-    public TournamentServiceImpl(@Qualifier("taskExecutor") TaskExecutor taskExecutor) {
+    public TournamentServiceImpl(@Qualifier("taskExecutor") TaskExecutor taskExecutor, TournamentRepository tournamentRepository) {
         this.executor = taskExecutor;
+        this.tournamentRepository = tournamentRepository;
     }
 
     @Override
@@ -87,5 +90,66 @@ public class TournamentServiceImpl implements TournamentService{
         }
 
         return currentTourneyStanding;
+    }
+
+    @Override
+    public void setCreatorAndSave(Tournament tournament, SiteUser siteUser) {
+        tournament.setCreatorId(siteUser.getId());
+        tournament.setUpdating(false);
+        tournamentRepository.save(tournament);
+    }
+
+    @Override
+    public Tournament getById(Long id) {
+        return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
+    }
+
+    @Override
+    public boolean validateAndDelete(Tournament tournament, SiteUser siteUser) {
+        if(tournament.getCreatorId().equals(siteUser.getId())){
+            tournamentRepository.deleteById(tournament.getId());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName) {
+        if (siteUser.getId().equals(tournament.getCreatorId())){
+            tournament.setTournamentName(newName);
+            tournamentRepository.save(tournament);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor) {
+        if (siteUser.getId().equals(tournament.getCreatorId())){
+            tournament.setVictorId(victor);
+            tournamentRepository.save(tournament);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region) {
+        if (siteUser.getId().equals(tournament.getCreatorId())) {
+            tournament.setRegionId(region);
+            tournamentRepository.save(tournament);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Tournament getByName(String name) {
+        return tournamentRepository.findByTournamentName(name).orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
+    }
+
+    @Override
+    public List<Tournament> getAll() {
+        return tournamentRepository.findAll();
     }
 }
