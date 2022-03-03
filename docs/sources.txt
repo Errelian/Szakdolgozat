@@ -10,3 +10,7 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [5] https://datatracker.ietf.org/doc/html/rfc2616
 
 [6] https://commitfest.postgresql.org/17/1252/ last accessed: 2022-02-27 20:53
+
+[7] https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/
+
+[8] https://docs.oracle.com/html/E13946_04/ejb3_langref.html
