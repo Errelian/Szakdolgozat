@@ -10,6 +10,9 @@ import com.egyetem.szakdolgozat.util.RoundCalculator;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class TournamentServiceImpl implements TournamentService{
 
     @Override
     public void emailSenderService(Tournament tournament) {
-
+        cacheEvictor();
         List<Team> teams = new ArrayList<>();
         for (TournamentToTeams tournamentToTeam : tournament.getTeams()) {
             teams.add(tournamentToTeam.getTeam());
@@ -52,9 +55,15 @@ public class TournamentServiceImpl implements TournamentService{
         });
     }
 
-    @Override
-    public List<List<TournamentToTeams>> currentStandingCalculatorService(Tournament tournament) {
+    @CacheEvict(value="tournaments",allEntries = true)
+    public void cacheEvictor(){
+        System.out.println("Cache evicted.");
+    }
 
+    @Override
+
+    public List<List<TournamentToTeams>> currentStandingCalculatorService(Tournament tournament) {
+        cacheEvictor();
         List<TournamentToTeams> teamList = tournament.getTeams();
         List<TournamentToTeams> firstRound = new ArrayList<>();
         int rounds = (int) Math.ceil(Math.log(teamList.size()) / Math.log(2));
@@ -100,47 +109,52 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
+    @Cacheable(value = "tournaments", key="#id")
     public Tournament getById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
     }
 
     @Override
-    public boolean validateAndDelete(Tournament tournament, SiteUser siteUser) {
+    @CacheEvict(value = "tournaments", key = "#tournament.id")
+    public void validateAndDelete(Tournament tournament, SiteUser siteUser) throws IllegalAccessException {
         if(tournament.getCreatorId().equals(siteUser.getId())){
             tournamentRepository.deleteById(tournament.getId());
-            return true;
         }
-        return false;
+        throw new IllegalAccessException();
     }
 
     @Override
-    public boolean validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName) {
+    @CachePut(value = "tournaments", key="#tournament.id")
+    public Tournament validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName)
+        throws IllegalAccessException {
         if (siteUser.getId().equals(tournament.getCreatorId())){
             tournament.setTournamentName(newName);
-            tournamentRepository.save(tournament);
-            return true;
+            return tournamentRepository.save(tournament);
+
         }
-        return false;
+        throw new IllegalAccessException();
     }
 
     @Override
-    public boolean validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor) {
+    @CachePut(value = "tournaments", key="#tournament.id")
+    public Tournament validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor)
+        throws IllegalAccessException {
         if (siteUser.getId().equals(tournament.getCreatorId())){
             tournament.setVictorId(victor);
-            tournamentRepository.save(tournament);
-            return true;
+            return tournamentRepository.save(tournament);
         }
-        return false;
+        throw new IllegalAccessException();
     }
 
     @Override
-    public boolean validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region) {
+    @CachePut(value = "tournaments", key="#tournament.id")
+    public Tournament validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region)
+        throws IllegalAccessException {
         if (siteUser.getId().equals(tournament.getCreatorId())) {
             tournament.setRegionId(region);
-            tournamentRepository.save(tournament);
-            return true;
+            return tournamentRepository.save(tournament);
         }
-        return false;
+        throw new IllegalAccessException();
     }
 
     @Override

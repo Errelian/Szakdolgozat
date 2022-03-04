@@ -16,13 +16,16 @@ public interface TournamentService {
 
     Tournament getById(Long id);
 
-    boolean validateAndDelete(Tournament tournament, SiteUser siteUser);
+    void validateAndDelete(Tournament tournament, SiteUser siteUser) throws IllegalAccessException;
 
-    boolean validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName);
+    Tournament validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName)
+        throws IllegalAccessException;
 
-    boolean validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor);
+    Tournament validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor)
+        throws IllegalAccessException;
 
-    boolean validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region);
+    Tournament validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region)
+        throws IllegalAccessException;
 
     Tournament getByName(String name);
 

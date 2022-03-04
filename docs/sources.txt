@@ -14,3 +14,5 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [7] https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/
 
 [8] https://docs.oracle.com/html/E13946_04/ejb3_langref.html
+
+[9] https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html

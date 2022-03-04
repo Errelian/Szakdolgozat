@@ -5,7 +5,6 @@ import com.egyetem.szakdolgozat.database.team.service.TeamService;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.service.TournamentService;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
-import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.service.TournamentToTeamsService;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.service.SiteUserService;
@@ -72,13 +71,13 @@ public class TournamentController {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
             Tournament tournament = tournamentService.getById(json.get("tournamentId"));
 
-            if (tournamentService.validateAndDelete(tournament, siteUser)) {
-                return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
-                HttpStatus.FORBIDDEN);
+            tournamentService.validateAndDelete(tournament, siteUser);
+            return new ResponseEntity<>("\"Deleted tournament.\"", HttpStatus.OK);
+
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException e){
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -93,15 +92,15 @@ public class TournamentController {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
             Tournament tournament = tournamentService.getByName(json.get("oldName"));
 
-            if (tournamentService.validateAndSaveNewName(tournament, siteUser, json.get("newName"))) {
-                return new ResponseEntity<>("\"Saved tournament name change.\"", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
-                HttpStatus.FORBIDDEN);
+            tournamentService.validateAndSaveNewName(tournament, siteUser, json.get("newName"));
+            return new ResponseEntity<>("\"Saved tournament name change.\"", HttpStatus.OK);
+
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("\"Error, name already in use.\"", HttpStatus.BAD_REQUEST);
+        } catch (IllegalAccessException e){
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -118,15 +117,14 @@ public class TournamentController {
             Tournament tournament = tournamentService.getById(Long.parseLong(json.get("tournamentId")));
 
 
-            if (tournamentService.validateAndSaveVictor(tournament, siteUser, Long.parseLong(json.get("victorId")))) {
-                tournamentService.emailSenderService(tournament);
-                return new ResponseEntity<>("\"Saved victor change.\"", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
-                HttpStatus.FORBIDDEN);
+            tournamentService.validateAndSaveVictor(tournament, siteUser, Long.parseLong(json.get("victorId")));
+            tournamentService.emailSenderService(tournament);
+            return new ResponseEntity<>("\"Saved victor change.\"", HttpStatus.OK);
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException e){
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -145,13 +143,13 @@ public class TournamentController {
 
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
 
-            if (tournamentService.validateAndChangeRegion(tournament, siteUser, json.get("regionId"))) {
-                return new ResponseEntity<>("\"Saved regionID change.\"", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
-                HttpStatus.FORBIDDEN);
+            tournamentService.validateAndChangeRegion(tournament, siteUser, json.get("regionId"));
+            return new ResponseEntity<>("\"Saved regionID change.\"", HttpStatus.OK);
+
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException e){
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
 
