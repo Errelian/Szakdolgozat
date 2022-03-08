@@ -52,6 +52,11 @@ public class TournamentToTeamsServiceImpl implements TournamentToTeamsService {
     }
 
     @Override
+    public void save(TournamentToTeams tournamentToTeams) {
+        tournamentToTeamsRepository.save(tournamentToTeams);
+    }
+
+    @Override
     public TournamentToTeams getById(Long teamId, Long tournamentId) {
         return tournamentToTeamsRepository.findTournamentToTeamsById(new TournamentToTeamsCKey(teamId, tournamentId))
             .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));

@@ -7,18 +7,18 @@ import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Notifier {
+@Service
+public class NotificationServiceImpl {
 
     private final static String API_KEY = System.getenv("MAIL_API");
 
     public static void notifyUsers(Tournament tournament) throws UnirestException {
-
-
 
         List<Team> teams= new ArrayList<>();
 

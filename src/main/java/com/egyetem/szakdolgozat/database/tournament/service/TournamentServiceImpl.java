@@ -5,7 +5,7 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
-import com.egyetem.szakdolgozat.notify.Notifier;
+import com.egyetem.szakdolgozat.notify.NotificationServiceImpl;
 import com.egyetem.szakdolgozat.util.RoundCalculator;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class TournamentServiceImpl implements TournamentService{
 
         executor.execute(() -> {
             try {
-                Notifier.notifyUsers(tournament);
+                NotificationServiceImpl.notifyUsers(tournament);
             } catch (UnirestException e) {
                 e.printStackTrace();
             }

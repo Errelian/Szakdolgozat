@@ -2,9 +2,7 @@ package com.egyetem.szakdolgozat;
 
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
-import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
-import com.egyetem.szakdolgozat.notify.Notifier;
-import com.egyetem.szakdolgozat.ranking.RankingService;
+import com.egyetem.szakdolgozat.notify.NotificationServiceImpl;
 import com.egyetem.szakdolgozat.seeding.Seeder;
 import com.egyetem.szakdolgozat.seeding.TeamSkillDto;
 import com.egyetem.szakdolgozat.database.team.persistance.Team;
@@ -72,7 +70,7 @@ public class TestController {
         System.out.println("waaaa");
 
         try {
-            Notifier.notifyUsers(tournament);
+            NotificationServiceImpl.notifyUsers(tournament);
         }catch (Exception e){
 
             System.out.println(e);

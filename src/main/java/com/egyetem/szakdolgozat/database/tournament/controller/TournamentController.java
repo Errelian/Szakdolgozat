@@ -155,7 +155,7 @@ public class TournamentController {
 
     @GetMapping(value = "/api/tournament/get/all", produces = "application/json")
     public ResponseEntity<Object> getAll() {
-        return new ResponseEntity<>(tournamentService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(tournamentService.getAll(), HttpStatus.OK)  ;
     }
 
     @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")

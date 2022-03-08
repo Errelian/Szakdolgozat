@@ -6,6 +6,7 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
@@ -36,6 +37,7 @@ public class RankingService {
     TournamentRepository tournamentRepository;
     RegionalAccountRepository regionalAccountRepository;
 
+    @Autowired
     public RankingService(TournamentRepository tournamentRepository,
                           RegionalAccountRepository regionalAccountRepository) {
         this.tournamentRepository = tournamentRepository;

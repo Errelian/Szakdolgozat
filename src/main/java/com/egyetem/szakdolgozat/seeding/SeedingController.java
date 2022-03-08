@@ -2,9 +2,11 @@ package com.egyetem.szakdolgozat.seeding;
 
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
+import com.egyetem.szakdolgozat.database.tournament.service.TournamentService;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsCKey;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeamsRepository;
+import com.egyetem.szakdolgozat.database.tournamentToTeams.service.TournamentToTeamsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -18,36 +20,31 @@ import java.util.ArrayList;
 @RestController
 public class SeedingController {
 
-    TournamentRepository tournamentRepository;
-    TournamentToTeamsRepository tournamentToTeamsRepository;
+    TournamentService tournamentService;
+    TournamentToTeamsService tournamentToTeamsService;
 
     @Autowired
-    public SeedingController(TournamentRepository tournamentRepository,
-                             TournamentToTeamsRepository tournamentToTeamsRepository) {
-        this.tournamentRepository = tournamentRepository;
-        this.tournamentToTeamsRepository = tournamentToTeamsRepository;
+    public SeedingController(TournamentService tournamentService,
+                             TournamentToTeamsService tournamentToTeamsService) {
+        this.tournamentService = tournamentService;
+        this.tournamentToTeamsService = tournamentToTeamsService;
     }
 
 
     @PutMapping(value = "/api/seeding/{tournamentId}", produces = "application/json")
     public ResponseEntity<Object> seedTournament(@PathVariable Long tournamentId) {
         try {
-            Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
+            Tournament tournament = tournamentService.getById(tournamentId);
 
             ArrayList<ArrayList<TeamSkillDto>> matchups = Seeder.seedTournament(tournament);
 
             int i = 1;
             for (ArrayList<TeamSkillDto> teamSkillDtos : matchups) {
                 for (TeamSkillDto team : teamSkillDtos) {
-                    System.out.println(team.getId());
                     if(team.getId() != -1L) {
-                        TournamentToTeams teamTable =
-                            tournamentToTeamsRepository
-                                .findTournamentToTeamsById(new TournamentToTeamsCKey(team.getId(), tournamentId)).get();
-
+                        TournamentToTeams teamTable = tournamentToTeamsService.getById(team.getId(), tournamentId);
                         teamTable.setPosition(i);
-                        tournamentToTeamsRepository.save(teamTable);
+                        tournamentToTeamsService.save(teamTable);
                     }
                     i++;
                 }

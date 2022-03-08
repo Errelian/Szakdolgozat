@@ -15,6 +15,8 @@ public interface TournamentToTeamsService {
 
     boolean validateAndSaveOrDelete(Tournament tournament, TournamentToTeams tournamentToTeams, Team team, SiteUser siteUser, boolean save);
 
+    void save(TournamentToTeams tournamentToTeams);
+
     TournamentToTeams getById(Long teamId, Long tournamentId);
 
     boolean validateAndEliminateTeam(Tournament tournament, TournamentToTeams tournamentToTeams, SiteUser siteUser, Long eliminationRound);
