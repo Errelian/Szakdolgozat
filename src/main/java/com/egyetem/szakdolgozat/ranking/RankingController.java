@@ -1,12 +1,10 @@
 package com.egyetem.szakdolgozat.ranking;
 
-import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
-import com.egyetem.szakdolgozat.database.regionalAccount.service.RegionalAccountService;
 import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
-import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournament.service.TournamentService;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
+import com.egyetem.szakdolgozat.ranking.Service.RankingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;

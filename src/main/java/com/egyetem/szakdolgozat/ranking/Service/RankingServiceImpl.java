@@ -1,4 +1,4 @@
-package com.egyetem.szakdolgozat.ranking;
+package com.egyetem.szakdolgozat.ranking.Service;
 
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccount;
 import com.egyetem.szakdolgozat.database.regionalAccount.persistance.RegionalAccountRepository;
@@ -6,6 +6,9 @@ import com.egyetem.szakdolgozat.database.tournament.persistance.Tournament;
 import com.egyetem.szakdolgozat.database.tournament.persistance.TournamentRepository;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
+import com.egyetem.szakdolgozat.ranking.serialization.IdDeserializer;
+import com.egyetem.szakdolgozat.ranking.serialization.RankDeserializer;
+import com.egyetem.szakdolgozat.ranking.serialization.RankEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -20,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class RankingService {
+public class RankingServiceImpl implements RankingService {
 
     private static final String BASE_URL = "https://%s.api.riotgames.com/lol";
     private static final String SUMMONER_URL = "/summoner/v4/summoners/by-name/%s";
@@ -38,7 +41,7 @@ public class RankingService {
     RegionalAccountRepository regionalAccountRepository;
 
     @Autowired
-    public RankingService(TournamentRepository tournamentRepository,
+    public RankingServiceImpl(TournamentRepository tournamentRepository,
                           RegionalAccountRepository regionalAccountRepository) {
         this.tournamentRepository = tournamentRepository;
         this.regionalAccountRepository = regionalAccountRepository;
@@ -46,6 +49,7 @@ public class RankingService {
 
 
     @Async
+    @Override
     public void updateRank(Tournament tournament) {
 
         tournament.setUpdating(true);
@@ -149,11 +153,11 @@ public class RankingService {
         tournamentRepository.save(tournament);
     }
 
+    @Override
     public String riotBaseUrlBuilder(String baseUrl, String region) {
         if ("KR".equals(region) || "RU".equals(region)) {
             return new Formatter().format(baseUrl, region).toString();
         }
-        System.out.println(new Formatter().format(baseUrl, region.concat("1")));
         return new Formatter().format(baseUrl, region.concat("1")).toString();
     }
 

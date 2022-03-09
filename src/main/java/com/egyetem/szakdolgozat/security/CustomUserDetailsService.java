@@ -1,4 +1,4 @@
-package com.egyetem.szakdolgozat.Security;
+package com.egyetem.szakdolgozat.security;
 
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;

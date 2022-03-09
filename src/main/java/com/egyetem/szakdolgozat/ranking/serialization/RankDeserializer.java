@@ -1,4 +1,4 @@
-package com.egyetem.szakdolgozat.ranking;
+package com.egyetem.szakdolgozat.ranking.serialization;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

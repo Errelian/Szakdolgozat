@@ -1,4 +1,4 @@
-package com.egyetem.szakdolgozat.ranking;
+package com.egyetem.szakdolgozat.ranking.serialization;
 
 public enum RankEnum {
     IRON((short)0),
