@@ -18,3 +18,11 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [9] https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html
 
 [10] http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod
+
+[11] https://datatracker.ietf.org/doc/html/rfc8259#section-2
+
+[12] https://datatracker.ietf.org/doc/html/rfc2616#section-9.5
+
+[13] w3sdesign.com/?gr=u01&ugr=proble#gf
+
+[14] https://docs.oracle.com/javase/tutorial/java/IandI/super.html

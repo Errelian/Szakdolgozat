@@ -7,6 +7,7 @@ import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.notify.NotificationServiceImpl;
 import com.egyetem.szakdolgozat.util.RoundCalculator;
+import com.egyetem.szakdolgozat.util.UnauthorizedException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -116,45 +117,45 @@ public class TournamentServiceImpl implements TournamentService{
 
     @Override
     @CacheEvict(value = "tournaments", key = "#tournament.id")
-    public void validateAndDelete(Tournament tournament, SiteUser siteUser) throws IllegalAccessException {
+    public void validateAndDelete(Tournament tournament, SiteUser siteUser) throws UnauthorizedException {
         if(tournament.getCreatorId().equals(siteUser.getId())){
             tournamentRepository.deleteById(tournament.getId());
         }
-        throw new IllegalAccessException();
+        throw new UnauthorizedException();
     }
 
     @Override
     @CachePut(value = "tournaments", key="#tournament.id")
     public Tournament validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName)
-        throws IllegalAccessException {
+        throws UnauthorizedException {
         if (siteUser.getId().equals(tournament.getCreatorId())){
             tournament.setTournamentName(newName);
             return tournamentRepository.save(tournament);
 
         }
-        throw new IllegalAccessException();
+        throw new UnauthorizedException();
     }
 
     @Override
     @CachePut(value = "tournaments", key="#tournament.id")
     public Tournament validateAndSaveVictor(Tournament tournament, SiteUser siteUser, Long victor)
-        throws IllegalAccessException {
+        throws UnauthorizedException {
         if (siteUser.getId().equals(tournament.getCreatorId())){
             tournament.setVictorId(victor);
             return tournamentRepository.save(tournament);
         }
-        throw new IllegalAccessException();
+        throw new UnauthorizedException();
     }
 
     @Override
     @CachePut(value = "tournaments", key="#tournament.id")
     public Tournament validateAndChangeRegion(Tournament tournament, SiteUser siteUser, String region)
-        throws IllegalAccessException {
+        throws UnauthorizedException {
         if (siteUser.getId().equals(tournament.getCreatorId())) {
             tournament.setRegionId(region);
             return tournamentRepository.save(tournament);
         }
-        throw new IllegalAccessException();
+        throw new UnauthorizedException();
     }
 
     @Override
@@ -165,5 +166,11 @@ public class TournamentServiceImpl implements TournamentService{
     @Override
     public List<Tournament> getAll() {
         return tournamentRepository.findAll();
+    }
+
+    @Override
+    public boolean validate(Tournament tournament) {
+        return !tournament.getTournamentName().isBlank() &&
+            !tournament.getRegionId().isBlank() && !tournament.getStartTime().toString().isBlank();
     }
 }

@@ -8,6 +8,7 @@ import com.egyetem.szakdolgozat.database.tournamentToTeams.TournamentToTeams;
 import com.egyetem.szakdolgozat.database.tournamentToTeams.service.TournamentToTeamsService;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.service.SiteUserService;
+import com.egyetem.szakdolgozat.util.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -43,11 +44,9 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/api/tournament/create", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> createNewTournament(
-        @RequestBody Tournament tournament) {
+    public ResponseEntity<String> createNewTournament(@RequestBody Tournament tournament) {
         try {
-            if (tournament.getTournamentName().isBlank() ||
-                tournament.getRegionId().isBlank() || tournament.getStartTime().toString().isBlank()) {
+            if (!tournamentService.validate(tournament)) {
                 return new ResponseEntity<>(
                     "\"Error, no field can be empty, null, or compromised of only whitespaces.\"",
                     HttpStatus.BAD_REQUEST);
@@ -99,7 +98,7 @@ public class TournamentController {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("\"Error, name already in use.\"", HttpStatus.BAD_REQUEST);
-        } catch (IllegalAccessException e){
+        } catch (UnauthorizedException e){
             return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
@@ -123,7 +122,7 @@ public class TournamentController {
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException e){
+        } catch (UnauthorizedException e){
             return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
@@ -148,7 +147,7 @@ public class TournamentController {
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException e){
+        } catch (UnauthorizedException e){
             return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
         }
     }
