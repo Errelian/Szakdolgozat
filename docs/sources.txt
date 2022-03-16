@@ -26,3 +26,5 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [13] w3sdesign.com/?gr=u01&ugr=proble#gf
 
 [14] https://docs.oracle.com/javase/tutorial/java/IandI/super.html
+
+[15] https://datatracker.ietf.org/doc/html/rfc7231#section-6

@@ -158,7 +158,6 @@ public class TournamentController {
     }
 
     @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")
-    //TODO HANDLE TOURNAMENTS OF SIZE 1
     public ResponseEntity<Object> getTeams(@PathVariable Long tournamentId) {
         try {
             Tournament tournament = tournamentService.getById(tournamentId);
