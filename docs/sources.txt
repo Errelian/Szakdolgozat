@@ -28,3 +28,11 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [14] https://docs.oracle.com/javase/tutorial/java/IandI/super.html
 
 [15] https://datatracker.ietf.org/doc/html/rfc7231#section-6
+
+[16] https://developer.riotgames.com/apis#summoner-v4
+
+[17] https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/task/TaskExecutor.html
+
+[18] https://cve.mitre.org/cgi-bin/cvename.cgi?name=cve-2021-44228
+
+[19] https://docs.spring.io/spring-security/reference/index.html

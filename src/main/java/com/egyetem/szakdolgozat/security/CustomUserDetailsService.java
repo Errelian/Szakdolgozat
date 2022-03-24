@@ -4,7 +4,6 @@ import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.egyetem.szakdolgozat.database.user.persistance.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
 
-        return new User(siteUser.getUsername(), siteUser.getPassword(),enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, new ArrayList<GrantedAuthority>());
+        return new User(siteUser.getUsername(), siteUser.getPassword(),enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, new ArrayList<>());
     }
 }

@@ -51,17 +51,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
             .antMatchers(
                 HttpMethod.GET,
-                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico", "/register", "/api/users/register")
+                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico", "/register", "/api/users/register"
+            )
             .permitAll()
-
             .anyRequest().authenticated()
                 .and()
             .formLogin().loginPage("/login")
             .loginProcessingUrl("/api/login-process")
-            .defaultSuccessUrl("/self-user")
-                .permitAll()
-                .and()
-            .httpBasic();
+            .defaultSuccessUrl("/self-user").permitAll();
 
     }
 

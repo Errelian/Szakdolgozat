@@ -11,9 +11,11 @@ import com.egyetem.szakdolgozat.ranking.serialization.RankDeserializer;
 import com.egyetem.szakdolgozat.ranking.serialization.RankEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
@@ -67,13 +69,12 @@ public class RankingServiceImpl implements RankingService {
 
         for (TournamentToTeams tournamentToTeams : tournament.getTeams()) {
             for (SiteUser user : tournamentToTeams.getTeam().getTeamMembers()) {
-                accounts.add(user.getRegionalAccountByRegion(tournament.getRegionId()).get());
+                accounts.add(user.getRegionalAccountByRegion(tournament.getRegionId()).orElseThrow(() -> new ResourceNotFoundException("Regional Account not found.")));
             }
         }
 
 
-        List<List<RegionalAccount>> partitions =
-            new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+        List<List<RegionalAccount>> partitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
         for (int i = 0; i < accounts.size(); i += 20) {
             partitions.add(accounts.subList(i, Math.min(i + 20, accounts.size())));
         }
@@ -97,12 +98,10 @@ public class RankingServiceImpl implements RankingService {
                     REQUEST_COUNTER = 0;
                 }
             }
-            System.out.println(ids);
 
             List<List<RankDeserializer>> rankings = new ArrayList<>();
 
-            List<List<IdDeserializer>> idPartitions =
-                new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+            List<List<IdDeserializer>> idPartitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
             for (int i = 0; i < ids.size(); i += 20) {
                 idPartitions.add(ids.subList(i, Math.min(i + 20, ids.size())));
             }
@@ -127,8 +126,6 @@ public class RankingServiceImpl implements RankingService {
                 }
             }
 
-
-            System.out.println(rankings);
             if (rankings != null) {
                 for (List<RankDeserializer> ranks : rankings) {
                     short highest = 0;

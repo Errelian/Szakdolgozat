@@ -7,6 +7,8 @@ import com.egyetem.szakdolgozat.database.user.persistance.SiteUser;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
@@ -22,6 +24,8 @@ public class NotificationServiceImpl {
 
         List<Team> teams= new ArrayList<>();
 
+        Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
         for (TournamentToTeams tournamentToTeams : tournament.getTeams()){
             teams.add(tournamentToTeams.getTeam());
         }
@@ -29,7 +33,7 @@ public class NotificationServiceImpl {
         for (Team team : teams) {
             String message;
             if (team.getId().equals(tournament.getVictorId())){
-                message = "Congrats, your teams has won the tournament: " + tournament.getTournamentName();
+                message = "Congratulations, your teams has won the tournament: " + tournament.getTournamentName();
             }
             else
             {
@@ -48,7 +52,7 @@ public class NotificationServiceImpl {
                     .queryString("subject", "Tournament ended.")
                     .queryString("text", message)
                     .asString();
-
+                logger.info(request.getBody());
             }
         }
     }
