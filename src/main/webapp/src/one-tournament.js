@@ -1,8 +1,7 @@
 import NavHeader from './navHeader';
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {  useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import testArray from './tester';
 import _ from "lodash";
 
 
@@ -15,7 +14,6 @@ function OneTournament() {
     const toastMessage = useRef(0);
 
     useEffect(() => {
-        //console.log('/api/tournament/get/teams/' + id);
         fetch('/api/tournament/get/teams/' + id, {
             method: 'GET',
             headers: {
@@ -27,7 +25,6 @@ function OneTournament() {
                     if (!(_.isEqual(json, standing))){
                         setStanding(json);
                     }
-                    //console.log(currentStanding.current);
                 })
             }
         })
@@ -43,15 +40,11 @@ function OneTournament() {
                         currentTournament.current = json;
                         setRerender(!rerender);
                     }
-                    //console.log(currentTournament.current);
                 })
             }
         })
 
     })
-
-    //console.log(currentTournament.current);
-    console.log(standing)
 
     if (toastMessage.current !== 0) {
         toast(toastMessage.current, {

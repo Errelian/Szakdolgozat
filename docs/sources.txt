@@ -36,3 +36,9 @@ the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000, C
 [18] https://cve.mitre.org/cgi-bin/cvename.cgi?name=cve-2021-44228
 
 [19] https://docs.spring.io/spring-security/reference/index.html
+
+[20] https://github.com/eirslett/frontend-maven-plugin/blob/master/README.md
+
+[21] https://reactjs.org/docs/components-and-props.html
+
+[22] https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
