@@ -22,37 +22,36 @@ public class NotificationServiceImpl {
 
     public static void notifyUsers(Tournament tournament) throws UnirestException {
 
-        List<Team> teams= new ArrayList<>();
+        if (false) { //because of the mailgun monthly limit bug
+            List<Team> teams = new ArrayList<>();
 
-        Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+            Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
-        for (TournamentToTeams tournamentToTeams : tournament.getTeams()){
-            teams.add(tournamentToTeams.getTeam());
-        }
-
-        for (Team team : teams) {
-            String message;
-            if (team.getId().equals(tournament.getVictorId())){
-                message = "Congratulations, your teams has won the tournament: " + tournament.getTournamentName();
-            }
-            else
-            {
-                message = "The tournament: " + tournament.getTournamentName() + " you partook in has ended. GGWP!";
+            for (TournamentToTeams tournamentToTeams : tournament.getTeams()) {
+                teams.add(tournamentToTeams.getTeam());
             }
 
-            for (SiteUser currUser : team.getTeamMembers()) {
-                System.out.println(API_KEY);
+            for (Team team : teams) {
+                String message;
+                if (team.getId().equals(tournament.getVictorId())) {
+                    message = "Congratulations, your teams has won the tournament: " + tournament.getTournamentName();
+                } else {
+                    message = "The tournament: " + tournament.getTournamentName() + " you partook in has ended. GGWP!";
+                }
 
-                System.out.println(currUser.geteMail());
-                HttpResponse<String>
-                    request = Unirest.post("https://api.eu.mailgun.net/v3/mg.tournament.ga/messages")
-                    .basicAuth("api", API_KEY)
-                    .queryString("from", "notifier@tournament.ga")
-                    .queryString("to", currUser.geteMail())
-                    .queryString("subject", "Tournament ended.")
-                    .queryString("text", message)
-                    .asString();
-                logger.info(request.getBody());
+                for (SiteUser currUser : team.getTeamMembers()) {
+
+                    HttpResponse<String>
+                        request = Unirest.post("https://api.eu.mailgun.net/v3/mg.tournament.ga/messages")
+                        .basicAuth("api", API_KEY)
+                        .queryString("from", "notifier@tournament.ga")
+                        .queryString("to", currUser.geteMail())
+                        .queryString("subject", "Tournament ended.")
+                        .queryString("text", message)
+                        .asString();
+                    logger.info(request.getBody());
+
+                }
             }
         }
     }
