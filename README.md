@@ -1,7 +1,10 @@
 # Szakdolgozat
-A szakdolgozatom.
+A szakdolgozat projektem.
 
+Java SPRING MVC alapú League of Legends bajnokság-szervező weboldal.
 
-Java SPRING alapú League of Legends bajnokság-szervező weboldal.
+PostgreSQL adatbázissal, ReactJS frontend-el.
 
-PostgreSQL adatbázissal.
+Adatbázis elérés a Spring DATA JPA-n keresztül.
+
+Készítette: Görög Balázs
