@@ -34,7 +34,7 @@ public class SeedingController {
     @PutMapping(value = "/api/seeding/{tournamentId}", produces = "application/json")
     public ResponseEntity<Object> seedTournament(@PathVariable Long tournamentId) {
         try {
-            Tournament tournament = tournamentService.getById(tournamentId);
+            Tournament tournament = tournamentService.getByIdCacheBypass(tournamentId);
 
             ArrayList<ArrayList<TeamSkillDto>> matchups = Seeder.seedTournament(tournament);
 

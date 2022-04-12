@@ -160,7 +160,7 @@ public class TournamentController {
     @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")
     public ResponseEntity<Object> getTeams(@PathVariable Long tournamentId) {
         try {
-            Tournament tournament = tournamentService.getById(tournamentId);
+            Tournament tournament = tournamentService.getByIdCacheBypass(tournamentId);
 
             if (tournament.getTeams().size() <= 1) {
                 return new ResponseEntity<>(tournament.getTeams(), HttpStatus.OK);

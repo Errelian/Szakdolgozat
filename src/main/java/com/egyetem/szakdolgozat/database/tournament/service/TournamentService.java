@@ -17,6 +17,8 @@ public interface TournamentService {
 
     Tournament getById(Long id);
 
+    Tournament getByIdCacheBypass(Long id);
+
     void validateAndDelete(Tournament tournament, SiteUser siteUser) throws IllegalAccessException;
 
     Tournament validateAndSaveNewName(Tournament tournament, SiteUser siteUser, String newName)

@@ -11,7 +11,7 @@
     <groupId>com.egyetem</groupId>
     <artifactId>Szakdolgozat</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>Szakdolgozat</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -185,6 +185,44 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>3.0.3</version>
+                <configuration>
+                    <appName>tournament-szakdolgozat</appName>
+                    <jdkVersion>15</jdkVersion>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>clean-jar-artifacts</id>
+                        <phase>install</phase>
+                        <goals><goal>clean</goal></goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target/node</directory>
+                                    <directory>target/surefire-reports</directory>
+                                    <directory>*node_modules*</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>.heroku/node</directory>
+                                </fileset>
+
+                            </filesets>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
 
         </plugins>
     </build>

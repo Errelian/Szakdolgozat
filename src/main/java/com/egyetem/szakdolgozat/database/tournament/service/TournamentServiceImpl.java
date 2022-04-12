@@ -116,6 +116,11 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
+    public Tournament getByIdCacheBypass(Long id) {
+        return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found."));
+    }
+
+    @Override
     @CacheEvict(value = "tournaments", key = "#tournament.id")
     public void validateAndDelete(Tournament tournament, SiteUser siteUser) throws UnauthorizedException {
         if(tournament.getCreatorId().equals(siteUser.getId())){
