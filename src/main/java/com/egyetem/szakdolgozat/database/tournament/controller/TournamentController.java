@@ -75,8 +75,9 @@ public class TournamentController {
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException e){
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+        } catch (IllegalAccessException e) {
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
+                HttpStatus.FORBIDDEN);
         }
     }
 
@@ -98,8 +99,9 @@ public class TournamentController {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("\"Error, name already in use.\"", HttpStatus.BAD_REQUEST);
-        } catch (UnauthorizedException e){
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
+                HttpStatus.FORBIDDEN);
         }
     }
 
@@ -122,8 +124,9 @@ public class TournamentController {
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
-        } catch (UnauthorizedException e){
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
+                HttpStatus.FORBIDDEN);
         }
     }
 
@@ -147,14 +150,15 @@ public class TournamentController {
 
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>("\"Error: " + e.getMessage() + "\"", HttpStatus.NOT_FOUND);
-        } catch (UnauthorizedException e){
-            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
+                HttpStatus.FORBIDDEN);
         }
     }
 
     @GetMapping(value = "/api/tournament/get/all", produces = "application/json")
     public ResponseEntity<Object> getAll() {
-        return new ResponseEntity<>(tournamentService.getAll(), HttpStatus.OK)  ;
+        return new ResponseEntity<>(tournamentService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/tournament/get/teams/{tournamentId}", produces = "application/json")
@@ -192,7 +196,8 @@ public class TournamentController {
                 return ResponseEntity.badRequest().body("No field can be left blank.");
             }
             TournamentToTeams tournamentToTeams = tournamentToTeamsService
-                .constructNewTournamentToTeams(Long.parseLong(json.get("teamId")), Long.parseLong(json.get("tournamentId")));
+                .constructNewTournamentToTeams(Long.parseLong(json.get("teamId")),
+                    Long.parseLong(json.get("tournamentId")));
 
             Tournament tournament = tournamentService.getById(Long.parseLong(json.get("tournamentId")));
 
@@ -223,7 +228,8 @@ public class TournamentController {
                 return new ResponseEntity<>("\"No field can be left blank.\"", HttpStatus.BAD_REQUEST);
             }
             TournamentToTeams tournamentToTeams = tournamentToTeamsService
-                .constructNewTournamentToTeams(Long.parseLong(json.get("teamId")), Long.parseLong(json.get("tournamentId")));
+                .constructNewTournamentToTeams(Long.parseLong(json.get("teamId")),
+                    Long.parseLong(json.get("tournamentId")));
 
 
             Tournament tournament = tournamentService.getById(Long.parseLong(json.get("tournamentId")));
@@ -235,7 +241,8 @@ public class TournamentController {
             SiteUser siteUser = siteUserService.getCurrentlyLoggedInSiteUser();
             Team team = teamService.getTeamById(Long.parseLong(json.get("teamId")));
 
-            if (tournamentToTeamsService.validateAndSaveOrDelete(tournament, tournamentToTeams, team, siteUser, false)) {
+            if (tournamentToTeamsService
+                .validateAndSaveOrDelete(tournament, tournamentToTeams, team, siteUser, false)) {
                 return new ResponseEntity<>("\"Successfully deleted.\"", HttpStatus.OK);
             }
             return new ResponseEntity<>("\"Forbidden: You are not the creator of the team.\"", HttpStatus.FORBIDDEN);
@@ -257,10 +264,12 @@ public class TournamentController {
 
                 Tournament tournament = tournamentService.getById(json.get("tournamentId"));
 
-                if (tournamentToTeamsService.validateAndEliminateTeam(tournament, tournamentToTeams,siteUser, json.get("eliminationRound"))) {
+                if (tournamentToTeamsService
+                    .validateAndEliminateTeam(tournament, tournamentToTeams, siteUser, json.get("eliminationRound"))) {
                     return new ResponseEntity<>("\"Successfully eliminated team.\"", HttpStatus.OK);
                 }
-                return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("\"Forbidden: You are not the creator of the tournament.\"",
+                    HttpStatus.FORBIDDEN);
 
             } else {
                 return new ResponseEntity<>("\"Error, no field can be smaller than 0 or left blank.\"",

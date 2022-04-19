@@ -23,13 +23,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        SiteUser siteUser = siteUserRepository.findSiteUserByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        SiteUser siteUser = siteUserRepository.findSiteUserByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         boolean enabled = true;
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
 
-        return new User(siteUser.getUsername(), siteUser.getPassword(),enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, new ArrayList<>());
+        return new User(siteUser.getUsername(), siteUser.getPassword(), enabled, accountNonExpired,
+            credentialsNonExpired, accountNonLocked, new ArrayList<>());
     }
 }

@@ -34,7 +34,7 @@ public class RankingServiceImpl implements RankingService {
 
     private static final int ONE_SECOND = 1010;
     private static final int TWO_MINUTES = 120100;
-        //in milliseconds, a little extra to make sure we are not getting rate limited
+    //in milliseconds, a little extra to make sure we are not getting rate limited
 
     private static int REQUEST_COUNTER = 0;
 
@@ -44,7 +44,7 @@ public class RankingServiceImpl implements RankingService {
 
     @Autowired
     public RankingServiceImpl(TournamentRepository tournamentRepository,
-                          RegionalAccountRepository regionalAccountRepository) {
+                              RegionalAccountRepository regionalAccountRepository) {
         this.tournamentRepository = tournamentRepository;
         this.regionalAccountRepository = regionalAccountRepository;
     }
@@ -69,12 +69,14 @@ public class RankingServiceImpl implements RankingService {
 
         for (TournamentToTeams tournamentToTeams : tournament.getTeams()) {
             for (SiteUser user : tournamentToTeams.getTeam().getTeamMembers()) {
-                accounts.add(user.getRegionalAccountByRegion(tournament.getRegionId()).orElseThrow(() -> new ResourceNotFoundException("Regional Account not found.")));
+                accounts.add(user.getRegionalAccountByRegion(tournament.getRegionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Regional Account not found.")));
             }
         }
 
 
-        List<List<RegionalAccount>> partitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+        List<List<RegionalAccount>> partitions =
+            new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
         for (int i = 0; i < accounts.size(); i += 20) {
             partitions.add(accounts.subList(i, Math.min(i + 20, accounts.size())));
         }
@@ -101,7 +103,8 @@ public class RankingServiceImpl implements RankingService {
 
             List<List<RankDeserializer>> rankings = new ArrayList<>();
 
-            List<List<IdDeserializer>> idPartitions = new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
+            List<List<IdDeserializer>> idPartitions =
+                new ArrayList<>(); //splitting it into easily manageable chunks to avoid rate limiting
             for (int i = 0; i < ids.size(); i += 20) {
                 idPartitions.add(ids.subList(i, Math.min(i + 20, ids.size())));
             }
